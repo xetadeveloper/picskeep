@@ -1,0 +1,8 @@
+# Node Modules
+node_modules
+
+#changes made
+changes.txt
+
+#Environment variables
+.env
