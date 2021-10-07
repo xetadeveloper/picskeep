@@ -1,0 +1,12 @@
+.container {
+    padding: 20px 0;
+}
+
+.folderHeader,
+.divider {
+  padding: 0 20px;
+}
+
+.folderHeader{
+    margin-bottom: 10px;
+}

@@ -1,0 +1,36 @@
+.searchContainer {
+  /* width: 100%; */
+  background-color: inherit;
+  color: inherit;
+  padding: 5px 8px;
+  min-width: 300px;
+  font-size: 1rem;
+  border-radius: 7px;
+}
+
+@media screen and (max-width: 768px) {
+  .searchContainer {
+    font-size: 0.8rem;
+    min-width: 0;
+  }
+}
+
+.searchInput {
+  color: inherit;
+  border: none;
+  outline: none;
+  /* border: 1px solid black; */
+  width: 100%;
+}
+
+@media screen and (max-width: 425px) {
+  .searchInput {
+    width: 150px;
+  }
+}
+
+.searchIcon {
+  /* border: 1px solid black; */
+  font-size: 1.1em;
+  cursor: pointer;
+}

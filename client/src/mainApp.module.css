@@ -1,0 +1,27 @@
+.fabBtn {
+  height: 50px;
+  width: 50px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 0 5px 2px grey;
+}
+
+.fabBtn:hover {
+  box-shadow: 0 0 10px 5px grey;
+}
+
+@media screen and (max-width: 768px) {
+  .fabBtn {
+    height: 40px;
+    width: 40px;
+    right: 10px;
+    bottom: 10px;
+  }
+}
+
+.fabIcon {
+  font-size: 1.5em;
+}

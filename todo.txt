@@ -1,0 +1,29 @@
+Server
+--------
+Super High
+* create the full server with authentication and all
+
+High
+
+Medium
+* Finish the models for the preferences, pictures and users
+* Create the function documentation for the mongodb.js functions
+
+Small
+
+
+
+Client
+--------
+Super High
+
+High
+* Make App js do the restoring of session
+* Create the profile page
+
+Medium
+* Add the modals
+* Implement update for picture component and turn update to hook to be used by folder component as well
+* Store a preferredTheme variable in local storage to know when to switch between dark and light themes
+
+Small
