@@ -19,8 +19,11 @@ import TopNav from './Components/TopNav/topNav';
 import { useSearchList } from './Custom Hooks/customHooks';
 import { FiPlus } from 'react-icons/fi';
 import Preferences from './Layouts/Preferences/preferences';
+import Modal from './Components/Modals/modal';
 
 function MainApp(props) {
+  const [modalState, setModalState] = useState({ show: false });
+
   // Redux Props
 
   const navLinks = [
@@ -30,13 +33,10 @@ function MainApp(props) {
     { path: '/logout', text: 'Logout' },
   ];
 
-  function uploadPicture(evt) {
-    // Call upload modal here with upload component
-  }
-
   return (
     <div className={`${style.container}`}>
       <BrowserRouter>
+        <Modal modalState={modalState} setModalState={setModalState} />
         <TopNav links={navLinks} />
         <Switch>
           <Route path='/profile' component={Profile} />
@@ -48,9 +48,15 @@ function MainApp(props) {
           <Route component={NotFound} />
         </Switch>
       </BrowserRouter>
+      {/* Fab Button */}
       <div
         className={`flex justify-center align-center brand-bg light-text ${style.fabBtn}`}
-        onClick={uploadPicture}>
+        onClick={() => {
+          setModalState({
+            show: true,
+            type: 'upload',
+          });
+        }}>
         <FiPlus className={style.fabIcon} />
       </div>
     </div>

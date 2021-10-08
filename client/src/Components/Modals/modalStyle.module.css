@@ -1,0 +1,138 @@
+.modal-body {
+  min-height: 300px;
+  min-width: 400px;
+  border: 1px solid #cac9c9;
+  position: relative;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 5px #e0e0e0;
+}
+
+.modal-skin {
+  background-color: #f53030;
+  color: white;
+}
+
+.modal-btn-holder {
+  width: 35%;
+  display: flex;
+  justify-content: center;
+  column-gap: 20px;
+}
+
+.modal-btn {
+  height: 30px;
+  min-width: 60px;
+  width: auto;
+  border: 1px solid #dad4d4;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #313030;
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 0.8em;
+}
+
+.modal-btn:hover {
+  color: white;
+  background-color: #f71212;
+  border: 1px solid #f71212;
+  box-shadow: 0 0 7px 1px #b8b8b8;
+}
+
+.modal-btn-lg {
+  min-width: 20%;
+  height: 35px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 1.2em;
+}
+
+.modal-btn:hover,
+.modal-close-btn:hover {
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  color: black;
+}
+
+.modal-text {
+  /* border: 1px solid black; */
+  max-width: 300px;
+  line-height: 25px;
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 30px;
+  line-height: 25px;
+}
+
+/* Input Modal */
+.modal-input {
+  height: 35px;
+  border-radius: 5px;
+  border: 1px solid #c7c6c6;
+  padding: 0px 10px;
+  color: rgb(71, 71, 71);
+  outline-color: #6e6e6e;
+}
+
+.modalInputHolder {
+  /* border: 1px solid black; */
+  row-gap: 10px;
+  margin-bottom: 20px;
+}
+
+.modalInputText {
+  font-size: 1em;
+}
+
+/* For Loading Modal */
+.loading {
+  row-gap: 30px;
+}
+
+/* Atomic Classes */
+.redBorder {
+  border: 2px solid rgb(233, 76, 76);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.faSpin {
+  animation: spin 1s infinite ease-in-out;
+}
+
+@media screen and (max-width: 768px) {
+  .loading > h1 {
+    font-size: 1.5em;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .modal-body {
+    min-height: 200px;
+    min-width: 250px;
+    border: 1px solid #cac9c9;
+    position: relative;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 1px 5px 5px #e0e0e0;
+  }
+}

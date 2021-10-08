@@ -1,10 +1,8 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import appReducer from '../Reducers/appReducer';
-import flagsReducer from '../Reducers/flagReducer';
 
 const rootReducer = combineReducers({
   app: appReducer,
-  flags: flagsReducer,
 });
 
 const store = createStore(rootReducer);

@@ -2,7 +2,7 @@
   font-size: 1rem;
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 768px) {
   .container {
     font-size: 0.8rem;
   }
@@ -24,18 +24,18 @@
   padding: 20px 40px;
 }
 
-.btn{
-    height: 40px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 2px solid #f71212;
-    background-color: white;
-    box-shadow: 0 0 10px 1px #ee5555
+.btn {
+  height: 40px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #f71212;
+  background-color: #e7e7e7;
+  box-shadow: 0 0 10px 1px #ee5555;
 }
 
-.btn:hover{
-    background-color: #f71212;
-    color: white;
+.btn:hover {
+  background-color: #f71212;
+  color: white;
 }
 
 .icon {
@@ -47,15 +47,43 @@
   color: #f71212;
 }
 
+.activeIcon {
+  color: #f71212;
+}
+
 .mainBody {
-    margin-top: 30px;
+  margin-top: 30px;
   gap: 30px;
+}
+
+.detailItem,
+.imgContainer {
+  grid-template-columns: 100px 1fr;
+}
+
+.imgContainer {
+  display: grid;
+  justify-items: center;
+  /* border: 1px solid black; */
+}
+
+@media screen and (max-width: 425px) {
+  .imgContainer {
+    grid-template-columns: 0 1fr;
+  }
 }
 
 .profilePic {
   height: 200px;
   width: 200px;
-  border: 1px solid black;  
+  border: 1px solid grey;
+}
+
+@media screen and (max-width: 768px) {
+  .profilePic {
+    height: 180px;
+    width: 180px;
+  }
 }
 
 .imgHolder {
@@ -70,7 +98,6 @@
 
 .detailItem {
   display: grid;
-  grid-template-columns: 100px 1fr;
   /* border: 1px solid black; */
   text-align: end;
   align-items: center;
@@ -84,4 +111,10 @@
   font-size: 1em;
   padding: 10px;
   outline-color: #f71212;
+}
+
+.detailInput:disabled {
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
 }

@@ -1,58 +1,103 @@
 // Modules
-import React, { useReducer, useState } from 'react';
-import { FiSettings, FiTrash } from 'react-icons/fi';
+import React, { useEffect, useReducer } from 'react';
+import { profileReducer, initialState } from './profileState';
+import { connect } from 'react-redux';
 
 // Styles
 import style from './profile.module.css';
 
 // Components
+import PagePrompt from '../../Components/PagePrompt/pagePrompt';
+import { FiSettings, FiTrash } from 'react-icons/fi';
+import Modal from '../../Components/Modals/modal';
+import defaultUserPic from '../../Images/user icon.png';
 
-const initialState = {
-  username: '',
-  password: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-};
+function Profile({ userInfo }) {
+  const [state, dispatch] = useReducer(profileReducer, initialState);
 
-function reducer(state = initialState, action) {
-  const { type, payload } = action;
+  const { formData, editMode, modalState } = state;
 
-  switch (type) {
-    case 'updateInput':
-      return { ...state, [payload.name]: payload.value };
+  // console.log('FormData: ', formData);
 
-    default:
-      return state;
-  }
-}
+  useEffect(() => {
+    // console.log('Running Effect');
+    dispatch({ type: 'setinitialform', payload: userInfo });
+  }, [userInfo]);
 
-export default function Profile(props) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  console.log('Profile State: ', state);
-
+  // Handles input change
   function handleChange(evt) {
     const name = evt.target.name;
     const value = evt.target.value;
 
-    dispatch({ type: 'updateInput', payload: { name, value } });
+    dispatch({ type: 'updateInput', payload: { [name]: value } });
   }
+
+  /** Updates the profile*/
+  function updateProfile() {}
+
+  // Sets the modal state
+  function setModalState(newState) {
+    dispatch({ type: 'updateModal', payload: newState });
+  }
+
+  // Deletes user account
+  function deleteAccount() {
+    setModalState({
+      show: true,
+      type: 'confirm',
+      message: 'Delete Your Account?',
+      actionHandler: () => {
+        console.log('Deleting Account...');
+        // call redux delete account
+      },
+    });
+  }
+
+  // Handles toggling edit mode
+  function handleEditMode() {
+    if (editMode) {
+      setModalState({
+        show: true,
+        type: 'confirm',
+        message: 'Discard Changes?',
+        actionHandler: () => {
+          setModalState({ show: false });
+          dispatch({ type: 'editMode', payload: false });
+        },
+      });
+    } else {
+      dispatch({ type: 'editMode', payload: true });
+    }
+  }
+
   return (
     <section>
+      <Modal modalState={modalState} setModalState={setModalState} />
+      <PagePrompt show={editMode} message='Discard Changes?' />
       <header
         className={`flex justify-between align-center ${style.container} ${style.profileHeader} `}>
         <h5 className={`bold-text ${style.headerTxt}`}>User Profile</h5>
         <div className={`flex ${style.container} ${style.btnGroup}`}>
-          <FiSettings className={`${style.icon}`} />
-          <FiTrash className={`${style.icon}`} />
+          <FiSettings
+            className={`${style.icon} ${editMode && style.activeIcon}`}
+            onClick={handleEditMode}
+          />
+          <FiTrash className={`${style.icon}`} onClick={deleteAccount} />
         </div>
       </header>
       <div className={`divider`}></div>
+      {/* Form Body */}
       <main
         className={`flex flex-col justify-center align-center ${style.mainBody} ${style.container}`}>
-        <div className={`${style.profilePic}`}>
-          <img alt={`profile image`} className={`${style.imgHolder}`} />
+        <div className={`${style.imgContainer}`}>
+          <div></div>
+          <div className={`${style.profilePic}`}>
+            <img
+              alt={`profile image`}
+              className={`${style.imgHolder}`}
+              src={defaultUserPic}
+            />
+          </div>
         </div>
         <div
           className={`flex flex-col justify-center align-center ${style.detailHolder}`}>
@@ -63,9 +108,10 @@ export default function Profile(props) {
             <input
               type='text'
               placeholder='Username'
-              value={state.username}
+              value={formData.username}
               onChange={handleChange}
               name='username'
+              disabled={!editMode}
               className={`dark-text ${style.detailInput}`}
             />
           </div>
@@ -76,9 +122,10 @@ export default function Profile(props) {
             <input
               type='text'
               placeholder='First Name'
-              value={state.firstName}
+              value={formData.firstName}
               onChange={handleChange}
               name='firstName'
+              disabled={!editMode}
               className={`dark-text ${style.detailInput}`}
             />
           </div>
@@ -89,9 +136,10 @@ export default function Profile(props) {
             <input
               type='text'
               placeholder='Last Name'
-              value={state.lastName}
+              value={formData.lastName}
               onChange={handleChange}
               name='lastName'
+              disabled={!editMode}
               className={`dark-text ${style.detailInput}`}
             />
           </div>
@@ -102,24 +150,45 @@ export default function Profile(props) {
             <input
               type='text'
               placeholder='Email'
-              value={state.email}
+              value={formData.email}
               onChange={handleChange}
               name='email'
+              disabled={!editMode}
               className={`dark-text ${style.detailInput}`}
             />
           </div>
         </div>
         {/* Update Buttons */}
-        <div
-          className={`flex justify-between align-center ${style.btnGroup} ${style.btnSpread}`}>
-          <button type='button' className={`dark-text ${style.btn}`}>
-            <h5>Update Profile</h5>
-          </button>
-          <button type='button' className={`dark-text ${style.btn}`}>
-            <h5>Cancel</h5>
-          </button>
-        </div>
+        {editMode && (
+          <div
+            className={`flex justify-between align-center ${style.btnGroup} ${style.btnSpread}`}>
+            <button
+              type='button'
+              className={`dark-text ${style.btn}`}
+              onClick={updateProfile}>
+              <h5>Update Profile</h5>
+            </button>
+            <button
+              type='button'
+              className={`dark-text ${style.btn}`}
+              onClick={handleEditMode}>
+              <h5>Cancel</h5>
+            </button>
+          </div>
+        )}
       </main>
     </section>
   );
 }
+
+function mapStateToProps(state) {
+  const { userInfo } = state.app;
+
+  return { userInfo };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);
