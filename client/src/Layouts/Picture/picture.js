@@ -11,9 +11,12 @@ import { dummyPictures } from '../../DummyData/dummy';
 import style from './picture.module.css';
 
 // Components
+import ScrollTop from '../../Components/ScrollTop/scrollTop';
+import Modal from '../../Components/Modals/modal';
 
 function Picture({ pictures }) {
   const pictureID = new URLSearchParams(useLocation().search).get('pictureID');
+  const [modalState, setModalState] = useState({ show: false });
 
   //   const picture =
   //     pictures && pictures.find(picture => picture.fileID === pictureID);
@@ -42,8 +45,26 @@ function Picture({ pictures }) {
     }
   }
 
+  function downloadPic() {
+    // Download the picture
+  }
+
+  function deletePic() {
+    // Delete the picture
+    setModalState({
+      show: true,
+      type: 'confirm',
+      message: 'Delete Picture?',
+      actionHandler: () => {
+        // Run delete here
+      },
+    });
+  }
+
   return (
     <section className={`${style.picPage}`}>
+      <ScrollTop />
+      <Modal modalState={modalState} setModalState={setModalState} />
       {/* Picture Nav */}
       <section
         className={`flex justify-between align-center ${style.container} ${style.navbar}`}>
@@ -62,11 +83,15 @@ function Picture({ pictures }) {
           onBlur={updatePicName}
         />
         <div className={`flex ${style.btnGroup} `}>
-          <button className={`flex justify-center align-center  ${style.btn}`}>
+          <button
+            className={`flex justify-center align-center ${style.btn}`}
+            onClick={downloadPic}>
             <h5 className={`bold-text ${style.btnText}`}>Download</h5>
             <FiDownload />
           </button>
-          <button className={`flex justify-center align-center ${style.btn}`}>
+          <button
+            className={`flex justify-center align-center ${style.btn}`}
+            onClick={deletePic}>
             <h5 className={`bold-text ${style.btnText}`}>Delete</h5>
             <FiTrash />
           </button>

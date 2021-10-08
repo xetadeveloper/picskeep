@@ -347,3 +347,16 @@ p {
     font-size: 0.8rem;
   }
 }
+
+@keyframes iconSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.iconRotate {
+  animation: iconSpin 1s infinite ease-in-out;
+}

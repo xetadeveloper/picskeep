@@ -1,0 +1,35 @@
+/* .container {
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    font-size: 0.9rem;
+  }
+} */
+
+.btn {
+  background-color: #e6e6e6;
+  border-radius: 5px;
+  border: 1px solid #b6b4b4;
+  text-align: center;
+  min-height: 40px;
+  font-family: inherit;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.btn:hover {
+  background-color: #f71212;
+  border: none;
+  color: white;
+  box-shadow: 0 0 5px 2px grey;
+}
+
+.wideBtn {
+  min-width: 100px;
+}
+
+.btnText {
+  /* font-size: 0.8em; */
+}

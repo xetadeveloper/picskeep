@@ -1,0 +1,53 @@
+.container {
+    font-size: 1rem;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      font-size: 0.8rem;
+    }
+  }
+  
+  .profileHeader {
+    font-size: inherit;
+    padding: 1.625em;
+    padding: 0.625em 1.625em;
+  }
+
+  
+.btnGroup {
+    gap: 20px;
+    /* border: 1px solid black; */
+  }
+  
+  .btnSpread {
+    width: 100%;
+    padding: 20px 40px;
+  }
+  
+  .btn {
+    height: 40px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #f71212;
+    background-color: #e7e7e7;
+    box-shadow: 0 0 10px 1px #ee5555;
+  }
+  
+  .btn:hover {
+    background-color: #f71212;
+    color: white;
+  }
+  
+  .icon {
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .icon:hover {
+    color: #f71212;
+  }
+  
+  .activeIcon {
+    color: #f71212;
+  }

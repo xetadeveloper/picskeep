@@ -125,6 +125,7 @@
 .dropDown {
   max-height: 500px;
   transition: max-height 0.3s ease-in-out;
+  z-index: 5;
 }
 
 @media screen and (max-width: 768px) {

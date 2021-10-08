@@ -7,3 +7,9 @@
     font-size: 0.8rem;
   }
 }
+
+.profileHeader {
+  font-size: inherit;
+  padding: 1.625em;
+  padding: 0.625em 1.625em;
+}

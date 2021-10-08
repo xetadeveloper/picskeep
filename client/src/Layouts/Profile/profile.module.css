@@ -8,12 +8,6 @@
   }
 }
 
-.profileHeader {
-  font-size: inherit;
-  padding: 1.625em;
-  padding: 0.625em 1.625em;
-}
-
 .btnGroup {
   gap: 20px;
   /* border: 1px solid black; */
@@ -36,19 +30,6 @@
 .btn:hover {
   background-color: #f71212;
   color: white;
-}
-
-.icon {
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.icon:hover {
-  color: #f71212;
-}
-
-.activeIcon {
-  color: #f71212;
 }
 
 .mainBody {

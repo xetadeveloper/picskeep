@@ -11,6 +11,8 @@ import PagePrompt from '../../Components/PagePrompt/pagePrompt';
 import { FiSettings, FiTrash } from 'react-icons/fi';
 import Modal from '../../Components/Modals/modal';
 import defaultUserPic from '../../Images/user icon.png';
+import ScrollTop from '../../Components/ScrollTop/scrollTop';
+import PageHeader from '../../Components/PageHeaderEdit/pageHeaderEdit';
 
 function Profile({ userInfo }) {
   const [state, dispatch] = useReducer(profileReducer, initialState);
@@ -74,18 +76,15 @@ function Profile({ userInfo }) {
     <section>
       <Modal modalState={modalState} setModalState={setModalState} />
       <PagePrompt show={editMode} message='Discard Changes?' />
-      <header
-        className={`flex justify-between align-center ${style.container} ${style.profileHeader} `}>
-        <h5 className={`bold-text ${style.headerTxt}`}>User Profile</h5>
-        <div className={`flex ${style.container} ${style.btnGroup}`}>
-          <FiSettings
-            className={`${style.icon} ${editMode && style.activeIcon}`}
-            onClick={handleEditMode}
-          />
-          <FiTrash className={`${style.icon}`} onClick={deleteAccount} />
-        </div>
-      </header>
-      <div className={`divider`}></div>
+      <ScrollTop />
+      <PageHeader
+        headerTxt='User Profile'
+        showEdit={true}
+        handleEdit={handleEditMode}
+        handleDelete={deleteAccount}
+        editMode={editMode}
+      />
+
       {/* Form Body */}
       <main
         className={`flex flex-col justify-center align-center ${style.mainBody} ${style.container}`}>

@@ -19,11 +19,9 @@ Super High
 
 High
 * Make App js do the restoring of session
-* Create the profile page
 * Finish the redux setup
 
 Medium
-* Add the modals
 * Implement update for picture component and turn update to hook to be used by folder component as well
 * Store a preferredTheme variable in local storage to know when to switch between dark and light themes
 * Fix the upload modal uploading functionality
@@ -32,3 +30,4 @@ Medium
 * Make a type that can do the spining icon thing when operation is going on
 
 Small
+* Design a fine not found page

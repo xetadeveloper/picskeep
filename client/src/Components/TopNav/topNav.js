@@ -24,7 +24,12 @@ export default function TopNav({ links }) {
       const { path, text } = link;
 
       return (
-        <li key={index} className={`${style.navItem}`}>
+        <li
+          key={index}
+          className={`${style.navItem}`}
+          onClick={() => {
+            setShowMenu(false);
+          }}>
           <NavLink to={path}>{text}</NavLink>
         </li>
       );

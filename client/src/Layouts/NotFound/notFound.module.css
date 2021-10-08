@@ -1,0 +1,21 @@
+.container {
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    font-size: 0.8rem;
+  }
+}
+
+.notFound {
+  height: 80vh;
+  gap: 60px;
+  text-align: center;
+  padding: 20px;
+}
+
+.backBtn:hover {
+  color: #f71212;
+  cursor: pointer;
+}

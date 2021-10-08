@@ -7,12 +7,9 @@ import style from './uploadModal.module.css';
 // Components
 import { FiFolder, FiPlus, FiTrash, FiX } from 'react-icons/fi';
 import Modal from '../modal';
+import Button from '../../Buttons/SmallButton/smallButton';
 
-export default function UploadModal(props) {
-  let iconLib = props.iconLib;
-  const { modalState, closeModal } = props;
-  const { message, actionHandler } = modalState;
-
+export default function UploadModal({ closeModal }) {
   const [fileList, setFileList] = useState([]);
   const [innerModalState, setInnerModalState] = useState({ show: false });
   const fileRef = useRef();
