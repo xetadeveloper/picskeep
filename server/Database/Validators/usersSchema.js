@@ -32,10 +32,10 @@ const usersSchema = {
         storageUsed: {
           bsonType: 'double',
         },
-        folders: {
-          bsonType: 'array',
-          items: { ...folderSchema.validator.$jsonSchema },
-        },
+        // folders: {
+        //   bsonType: 'array',
+        //   items: { ...folderSchema.validator.$jsonSchema },
+        // },
         pictures: {
           bsonType: 'array',
           items: { ...pictureSchema.validator.$jsonSchema },

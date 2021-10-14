@@ -6,3 +6,7 @@ changes.txt
 
 #Environment variables
 .env
+
+
+#test file
+syntaxTest.js

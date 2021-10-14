@@ -1,3 +1,5 @@
+import { removeNull } from '../../Utils/utility';
+
 export default class Preferences {
   constructor(pref) {
     this.saveSession = false;
@@ -5,5 +7,9 @@ export default class Preferences {
     if (pref) {
       Object.assign(this, pref);
     }
+  }
+
+  removeEmptyFields() {
+    return removeNull.call(this);
   }
 }

@@ -14,6 +14,10 @@ const folders = {
         folderName: {
           bsonType: 'string',
         },
+        folderPictures: {
+          bsonType: 'array',
+          // items: { ...pictureSchema.validator.$jsonSchema },
+        },
       },
     },
   },

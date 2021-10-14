@@ -4,19 +4,26 @@ import {
   validationAction,
   validationLevel,
 } from './Validators/validator.js';
-// import { serverErrorFound } from '../Utility/errorHandling.js';
 
 const { MongoClient } = mongo;
+let isConnected = false;
 const productionMode = process.env.NODE_ENV == 'production';
+const testMode = process.env.NODE_ENV === 'test';
 
-const defaultDB = process.env.defaultDB;
-const dbUrl = productionMode ? process.env.prodDBUrl : process.env.devDBUrl;
+const defaultDB = testMode ? process.env.testDB : process.env.defaultDB;
+
+const dbUrl = productionMode
+  ? process.env.prodDBUrl
+  : testMode
+  ? process.env.testDBUrl
+  : process.env.devDBUrl;
+console.log('DBUrl: ', dbUrl);
+console.log('DBName: ', defaultDB);
 
 const DBPool = {};
 let client;
 
 async function connectDB(dbName = defaultDB) {
-  // console.log('DBUrl: ', dbUrl);
   if (!client) {
     client = new MongoClient(dbUrl, {
       useNewUrlParser: true,
@@ -32,14 +39,21 @@ async function connectDB(dbName = defaultDB) {
   }
 
   const db = client.db(dbName);
+  // console.log('Db that was connected: ', db)
   if (!(await checkDBExists(db, dbName))) {
-    console.log('DB does not exist');
-    await configureDB(db, DBCollections, validationLevel, validationAction);
-    console.log('Database created');
+    console.log(`DB ${dbName} does not exist`);
+    await configureDefaultDB(
+      db,
+      DBCollections,
+      validationLevel,
+      validationAction
+    );
+    console.log(`Database ${dbName} created`);
   }
 
   // Add to database pool
   DBPool[dbName] = db;
+  isConnected = true;
 
   return db;
 }
@@ -61,7 +75,12 @@ async function checkDBExists(db, dbName) {
   return exists;
 }
 
-async function configureDB(db, collections, validationLevel, validationAction) {
+async function configureDefaultDB(
+  db,
+  collections,
+  validationLevel,
+  validationAction
+) {
   try {
     // Setup DB for first time use
     collections.forEach(coll => {
@@ -90,11 +109,16 @@ async function configureDB(db, collections, validationLevel, validationAction) {
   }
 }
 
+/**For configuring several databases
+ */
+async function configureAllDB() {}
+
 /** This function gets the database instance if found in the pool or creates a new connection and returns that
  * @param {String} dbName Name of the database to get the instance
  * @returns a mongoDB database instance
  */
 export async function getDBInstance(dbName = defaultDB) {
+  // console.log('DBName to get intance: ', dbName);
   if (DBPool[dbName]) {
     // console.log('DB already connected..');
     return DBPool[dbName];
@@ -102,20 +126,24 @@ export async function getDBInstance(dbName = defaultDB) {
     // console.log('DB not connected....');
     try {
       // console.log('DB Name: ', dbName);
-      connectDB(dbName).then(db => {
-        return db;
-      });
+      return await connectDB(dbName);
     } catch (err) {
+      console.log('Error occured in gettingDBInstance: ', err);
       throw err;
     }
   }
+}
+
+export function checkIfConnected() {
+  return isConnected;
 }
 
 export function closeClientInstance() {
   if (client) {
     try {
       client.close();
-      console.log('Client has been closed...');
+      // console.log('Client has been closed...');
+      isConnected = false;
     } catch (err) {
       throw err;
     }

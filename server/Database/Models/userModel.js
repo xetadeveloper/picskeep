@@ -1,4 +1,7 @@
 import bcrypt from 'bcrypt';
+import mongoTypes from 'mongodb';
+const { Double } = mongoTypes;
+import { removeNull } from '../../Utils/utility.js';
 
 export default class User {
   constructor(user) {
@@ -10,7 +13,7 @@ export default class User {
     this.storageUsed = '';
 
     if (user) {
-      Object.assign(this, ...user);
+      Object.assign(this, user);
     }
   }
 
@@ -26,5 +29,31 @@ export default class User {
     }
   }
 
-  convertToMongo() {}
+  removeEmptyFields() {
+    return removeNull.call(this);
+  }
+
+  convertToMongo() {
+    const mongoTypes = {
+      username: this.username,
+      password: this.password,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      storageUsed: this.storageUsed ? Double(this.storageUsed) : null,
+    };
+
+    for (let prop in mongoTypes) {
+      if (
+        !mongoTypes[prop] ||
+        (typeof mongoTypes[prop] === 'object' &&
+          Object.keys(mongoTypes[prop]).indexOf('value') > -1 &&
+          !mongoTypes[prop].value)
+      ) {
+        delete mongoTypes[prop];
+      }
+    }
+
+    return mongoTypes;
+  }
 }

@@ -8,7 +8,7 @@ const preferencesSchema = {
       bsonType: 'object',
       required: ['saveSession'],
       properties: {
-        saveSession: {
+        saveSession: { 
           bsonType: 'bool',
         },
       },
