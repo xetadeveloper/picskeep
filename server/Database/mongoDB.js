@@ -17,8 +17,8 @@ const dbUrl = productionMode
   : testMode
   ? process.env.testDBUrl
   : process.env.devDBUrl;
-console.log('DBUrl: ', dbUrl);
-console.log('DBName: ', defaultDB);
+// console.log('DBUrl: ', dbUrl);
+// console.log('DBName: ', defaultDB);
 
 const DBPool = {};
 let client;

@@ -1,18 +1,15 @@
 // Modules
 import './config.js';
 import express from 'express';
-import {
-  checkIfConnected,
-  closeClientInstance,
-  getDBInstance,
-} from './Database/mongoDB.js';
+import { getDBInstance } from './Database/mongoDB.js';
 import path from 'path';
 import session from 'express-session';
 import mongoDBSession from 'connect-mongodb-session';
 import { serverErrorFound } from './Utils/errorHandling.js';
 import { v4 as genUUID } from 'uuid';
 import { isLoggedIn } from './Middleware/middleware.js';
-import { closeTransport } from './Utils/MailSender/mailSend.js';
+import cleanupServer from './Utils/cleanup.js';
+import { getS3Client, testAWSCommands } from './S3/awsModule.js';
 
 // Routers
 import staticRoutes from './Routes/staticRoutes.js';
@@ -28,17 +25,24 @@ const dbUrl = productionMode
   ? process.env.testDBUrl
   : process.env.devDBUrl;
 
-
-// Start up the database instance
+// Start up the database instance and s3 client
 if (!testMode) {
-  getDBInstance();
+  await getDBInstance();
+  await getS3Client();
+  // await testAWSCommands();
 }
 
 // For handling session
-const MongoDBSession = mongoDBSession(session);
-const store = new MongoDBSession({
+const MongoDBStore = mongoDBSession(session);
+const store = new MongoDBStore({
   uri: dbUrl,
   collection: 'picskeepsession',
+  expires: 1000 * 60 * 60 * 24 * 30, // 30 days in milliseconds
+  connectionOptions: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000,
+  },
 });
 
 app.use(
@@ -48,6 +52,11 @@ app.use(
     saveUninitialized: false,
     resave: false,
     store,
+    cookie: {
+      name: 'picskeepid', //name of sessionid
+      rolling: true, //makes it that max-age is extended from last reques-response cycle
+      maxAge: 432000000, //when session should expire (5 days)
+    },
   })
 );
 
@@ -87,17 +96,9 @@ if (!testMode) {
 }
 
 // Handle other errors that cause app to exit, for cleanup
-function handleAppClose(code) {
-  console.log(`App exited with code: ${code}`);
-  console.log('isDBCOnnected in exit: ', checkIfConnected());
-  if (checkIfConnected()) {
-    closeClientInstance();
-    closeTransport();
-  }
-}
-process.once('exit', handleAppClose);
-process.once('SIGINT', handleAppClose);
-process.once('SIGUSR2', handleAppClose);
+process.once('exit', cleanupServer);
+process.once('SIGINT', cleanupServer);
+process.once('SIGUSR2', cleanupServer);
 // process.once('beforeExit', handleAppClose);
 // process.once('SIGTERM', handleAppClose);
 // process.once('SIGBREAK', handleAppClose);

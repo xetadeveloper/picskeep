@@ -6,19 +6,13 @@ const pictures = {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['picID','url', 'fileName'],
+      required: ['picID', 'fileName'],
       properties: {
         picID: {
           bsonType: 'string',
         },
-        url: {
-          bsonType: 'string',
-        },
         fileName: {
           bsonType: 'string',
-        },
-        size: {
-          bsonType: 'double',
         },
       },
     },

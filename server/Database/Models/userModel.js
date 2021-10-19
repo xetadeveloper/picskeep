@@ -10,7 +10,10 @@ export default class User {
     this.firstName = '';
     this.lastName = '';
     this.email = '';
-    this.storageUsed = '';
+    this.storageUsed = 0;
+    this.profilePicName = 'N/A';
+    this.pictures = [];
+    this.preferences = { saveSession: false };
 
     if (user) {
       Object.assign(this, user);
@@ -40,7 +43,10 @@ export default class User {
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
+      profilePicName: this.profilePicName,
       storageUsed: this.storageUsed ? Double(this.storageUsed) : null,
+      pictures: this.pictures,
+      preferences: this.preferences,
     };
 
     for (let prop in mongoTypes) {

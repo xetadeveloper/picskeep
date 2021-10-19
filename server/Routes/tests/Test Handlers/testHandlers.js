@@ -42,14 +42,8 @@ export async function cleanupDB() {
     const db = await getDBInstance();
     const users = db.collection('users');
     const sessionCol = db.collection('picskeepsession');
-    const result = await users.deleteMany({
-      username: { $in: dummyUsers.map(user => user.username) },
-    });
+    const result = await users.deleteMany({});
 
-    const sessions = await sessionCol.find({});
-
-    const sessArr = await sessions.toArray();
-    console.log('Sessions Available: ', sessArr);
     const sessResult = await sessionCol.deleteMany({});
 
     // console.log('User Delete Result: ', result);

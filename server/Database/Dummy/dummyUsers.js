@@ -11,11 +11,12 @@ export const dummyUsers = [
     lastName: 'Powell',
     email: 'linda@gmail.com',
     storageUsed: 3000,
+    profilePicName: 'profile1.jpg',
   },
 ];
 
 export const plainDummyUsers = [
-  { ...dummyUsers, pictures: dummyPictures, preferences: dummyPref },
+  { ...dummyUsers[0], pictures: dummyPictures, preferences: dummyPref },
 ];
 
 const mongoUsers = await Promise.all(

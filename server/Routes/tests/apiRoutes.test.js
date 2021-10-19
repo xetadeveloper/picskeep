@@ -4,6 +4,8 @@ import { cleanupDB, insertToDB } from './Test Handlers/testHandlers.js';
 import { plainDummyUsers } from '../../Database/Dummy/dummyUsers.js';
 
 let userInfo;
+let cookies;
+const agent = request(app);
 const loginInfo = {
   data: {
     username: 'linda',
@@ -21,11 +23,12 @@ afterAll(async () => {
   await cleanupDB();
 });
 
+// Testing retrieval of user information
 describe('GET /api/getUserInfo', () => {
   const loginRes = { app: { isLoggedIn: true } };
 
-  test('Should login to database ', async () => {
-    const res = await request(app)
+  test('Should login user properly', async () => {
+    const res = await agent
       .post('/login')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -34,20 +37,25 @@ describe('GET /api/getUserInfo', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(loginRes);
     expect(res.type).toBe('application/json');
+    expect(res.headers).toHaveProperty('set-cookie');
+    cookies = res.headers['set-cookie'].pop().split(';')[0];
   });
 
   test('Should return dummyUser data', async () => {
-    // Find out how to send the session info with the request
-    const res = await request(app)
+    const appResData = plainDummyUsers[0];
+    delete appResData.password;
+
+    const expectedRes = { app: { userInfo: appResData } };
+    const res = await agent
       .get('/api/getUserInfo')
       .set('Accept', 'application/json')
+      .set('Cookie', [cookies])
       .expect(res => {
-        delete res.body._id;
+        delete res.body.app.userInfo._id;
       });
 
-    // console.log('Database User info: ', userInfo);
-
-    expect(res.body).toEqual(plainDummyUsers[0]);
-    return;
+    expect(res.body).toEqual(expectedRes);
+    expect(res.body.app.userInfo.password).toBeUndefined();
+    expect(res.body.app.userInfo._id).toBeUndefined();
   }, 100000);
 });

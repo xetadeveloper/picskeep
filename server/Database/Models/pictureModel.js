@@ -1,11 +1,7 @@
 import { removeNull } from '../../Utils/utility.js';
-import mongoTypes from 'mongodb';
-const { Double } = mongoTypes;
 
 export default class Picture {
   constructor(picture) {
-    this.url = '';
-    this.size = 0;
     this.picID = '';
     this.fileName = '';
 
@@ -20,8 +16,6 @@ export default class Picture {
 
   convertToMongo() {
     const mongoTypes = {
-      url: this.url,
-      size: this.size ? Double(this.size) : null,
       picID: this.picID,
       fileName: this.fileName,
     };

@@ -1,4 +1,4 @@
-import { errorTypes } from '../config.js';
+import { debugMode, errorTypes } from '../config.js';
 
 export function serverErrorFound(res, err, errMessage) {
   console.log('Error occured in server operation: ', err);
@@ -6,7 +6,7 @@ export function serverErrorFound(res, err, errMessage) {
     app: {
       error: {
         type: errorTypes.servererror,
-        message: errMessage,
+        message: debugMode ? err.stack : errMessage,
       },
     },
   });
@@ -18,14 +18,14 @@ export function dbOperationError(res, err, errMessage) {
     app: {
       error: {
         type: errorTypes.databaseerror,
-        message: errMessage,
+        message: debugMode ? err.stack : errMessage,
       },
     },
   });
 }
 
 export function executionError(res, status, errType, errMessage) {
-  console.log('Error occured in an operation: ', err);
+  console.log('Error occured in an operation');
   res.status(status).json({
     app: {
       error: {
@@ -71,7 +71,7 @@ export function executionError(res, status, errType, errMessage) {
  * @param {StatusCode} status 
  */
 export function badInputError(res, errorFields, errorType, status) {
-  console.log('Client supplied bad input...');
+  console.log('Client supplied bad input: ', errorFields);
   res.status(status || 400).json({
     app: {
       error: {

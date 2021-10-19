@@ -32,6 +32,9 @@ const usersSchema = {
         storageUsed: {
           bsonType: 'double',
         },
+        profilePicName: {
+          bsonType: 'string',
+        },
         // folders: {
         //   bsonType: 'array',
         //   items: { ...folderSchema.validator.$jsonSchema },

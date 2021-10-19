@@ -1,13 +1,16 @@
 Server
 --------
 Super High
+* Add logging to errorHandlers
 
 High
 * Configure database file to add many databases on config
 
 Medium
 * Create the function documentation for the mongodb.js functions
-* Chnage the values of some dummy data to MongoDB specific values
+* on login without save session checkbox ticked we set the req.session.cookie.expires to false to make sure the browser doesn't persist the session after page close
+* Test the integration test for CRUD of a picture
+* Run test for the deletion of many pictures
 
 Small
 * The script tag src is not working in static pages
@@ -22,6 +25,9 @@ High (~2 hrs)
 * Make App js do the restoring of session
 * Finish the redux setup
 * Do the drop modal component thingy for errors
+* Create a picture component that implements the lazy loading and controls its image fethcing 
+* when uploading do a progress bar, and upload each file to aws synchronously and when it's done uploading take it off the list in the state of the uploadModal
+* Change the 'filename' variable to 's3Key'
 
 Medium (~30 Mins -> 1hr)
 * Implement update for picture component and turn update to hook to be used by folder component as well
@@ -36,4 +42,5 @@ Medium (~30 Mins -> 1hr)
 
 Small (~15 Mins)
 * Design a fine not found page
+* Make the profile picture to be circle not square
 * In he home page, make the 'Your folders" part to be clickable, not just the arrow drop down

@@ -15,3 +15,13 @@ export const errorTypes = {
 };
 
 export const appMode = 'dev';
+export const debugMode = true;
+
+export const serverErrMsg =
+  'Sorry an error occured on the server. Please contact support';
+
+export const dbOpErrorMsg = 'An error occured. Please contact support';
+
+export const saltRounds = 10;
+
+
