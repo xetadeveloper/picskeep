@@ -14,6 +14,7 @@ import { getS3Client, testAWSCommands } from './S3/awsModule.js';
 // Routers
 import staticRoutes from './Routes/staticRoutes.js';
 import apiRoutes from './Routes/apiRoutes.js';
+import { insertToDB } from './Routes/tests/Test Handlers/testHandlers.js';
 
 export const app = express();
 const productionMode = process.env.NODE_ENV === 'production';
@@ -28,11 +29,13 @@ const dbUrl = productionMode
 // Start up the database instance and s3 client
 if (!testMode) {
   await getDBInstance();
-  await getS3Client();
-  // await testAWSCommands();
+  // await insertToDB()
 }
 
-// For handling session
+await getS3Client(false);
+// await testAWSCommands();
+
+// Mongodb session store config
 const MongoDBStore = mongoDBSession(session);
 const store = new MongoDBStore({
   uri: dbUrl,
@@ -45,6 +48,7 @@ const store = new MongoDBStore({
   },
 });
 
+// Express session config
 app.use(
   session({
     genid: () => genUUID(),

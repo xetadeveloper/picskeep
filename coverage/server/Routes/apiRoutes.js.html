@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.91% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/48</span>
+                <span class='fraction'>11/44</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.91% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/48</span>
+                <span class='fraction'>11/44</span>
             </div>
         
             
@@ -179,15 +179,7 @@
 <a name='L120'></a><a href='#L120'>120</a>
 <a name='L121'></a><a href='#L121'>121</a>
 <a name='L122'></a><a href='#L122'>122</a>
-<a name='L123'></a><a href='#L123'>123</a>
-<a name='L124'></a><a href='#L124'>124</a>
-<a name='L125'></a><a href='#L125'>125</a>
-<a name='L126'></a><a href='#L126'>126</a>
-<a name='L127'></a><a href='#L127'>127</a>
-<a name='L128'></a><a href='#L128'>128</a>
-<a name='L129'></a><a href='#L129'>129</a>
-<a name='L130'></a><a href='#L130'>130</a>
-<a name='L131'></a><a href='#L131'>131</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L123'></a><a href='#L123'>123</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -229,14 +221,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -359,14 +343,6 @@ router.get('/getUserInfo', <span class="fstat-no" title="function not covered" >
 <span class="cstat-no" title="statement not covered" >      console.log('Found User before adding url: ', foundUser);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (foundUser) {</span>
-        // Create presigned urls for pictures and add them to picture array
-        const { pictures } = <span class="cstat-no" title="statement not covered" >foundUser;</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        foundUser.pictures = pictures.map(<span class="fstat-no" title="function not covered" >pi</span>cture =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          picture.url = getS3SignedUrl('get', picture.fileName);</span>
-<span class="cstat-no" title="statement not covered" >          return picture;</span>
-        });
-&nbsp;
 <span class="cstat-no" title="statement not covered" >        console.log('Found User after adding url: ', foundUser);</span>
 <span class="cstat-no" title="statement not covered" >        res.status(200).json({</span>
           app: { userInfo: foundUser },
@@ -389,9 +365,9 @@ router.get('/getUserInfo', <span class="fstat-no" title="function not covered" >
 &nbsp;
 // Gets one aws signed url
 router.get('/getSignedUrl', hasData, <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const { fileName } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
+  const { s3Key } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
 &nbsp;
-  const signedUrl = <span class="cstat-no" title="statement not covered" >getPresignedUrl(fileName);</span>
+  const signedUrl = <span class="cstat-no" title="statement not covered" >getPresignedUrl(s3Key);</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Get Signed Url: ', signedUrl);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  res.status(200).json({ app: { getSignedUrl: { value: signedUrl } } });</span>
@@ -399,10 +375,10 @@ router.get('/getSignedUrl', hasData, <span class="fstat-no" title="function not 
 &nbsp;
 // Gets multiple aws signed urls (mostly going to be used for uploading mutliple pictures)
 router.get('/getMultipleSignedUrls', hasData, <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const { fileNames } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
+  const { s3Keys } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
 &nbsp;
-  const multipleUrls = <span class="cstat-no" title="statement not covered" >fileNames.map(<span class="fstat-no" title="function not covered" >fi</span>leName =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return { fileName: fileName, signedUrl: getPresignedUrl(fileName) };</span>
+  const multipleUrls = <span class="cstat-no" title="statement not covered" >s3Keys.map(<span class="fstat-no" title="function not covered" >s3</span>Key =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return { s3Key, signedUrl: getPresignedUrl(key) };</span>
   });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  console.log('Signed Urls: ', multipleUrls);</span>
@@ -414,9 +390,9 @@ router.get('/getMultipleSignedUrls', hasData, <span class="fstat-no" title="func
 &nbsp;
 // Send one PUT presigned url back to client
 router.get('/putSignedUrl', hasData, <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const { fileName } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
+  const { s3Key } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
 &nbsp;
-  const signedUrl = <span class="cstat-no" title="statement not covered" >putPresignedUrl(fileName);</span>
+  const signedUrl = <span class="cstat-no" title="statement not covered" >putPresignedUrl(s3Key);</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Put Signed Url: ', signedUrl);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  res.status(200).json({ app: { putSignedUrl: { value: signedUrl } } });</span>
@@ -424,10 +400,10 @@ router.get('/putSignedUrl', hasData, <span class="fstat-no" title="function not 
 &nbsp;
 // Send many PUT presigned urls back to client
 router.get('/putMultipleSignedUrls', hasData, <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const { fileNames } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
+  const { s3Keys } = <span class="cstat-no" title="statement not covered" >req.body.data;</span>
 &nbsp;
-  const multipleUrls = <span class="cstat-no" title="statement not covered" >fileNames.map(<span class="fstat-no" title="function not covered" >fi</span>leName =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return { fileName: fileName, signedUrl: putPresignedUrl(fileName) };</span>
+  const multipleUrls = <span class="cstat-no" title="statement not covered" >s3Keys.map(<span class="fstat-no" title="function not covered" >s3</span>Key =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return { s3Key, signedUrl: putPresignedUrl(s3Key) };</span>
   });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  console.log('Signed Urls: ', multipleUrls);</span>
@@ -454,7 +430,7 @@ export default router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Oct 19 2021 20:34:01 GMT+0100 (British Summer Time)
+                at Wed Oct 20 2021 18:11:59 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

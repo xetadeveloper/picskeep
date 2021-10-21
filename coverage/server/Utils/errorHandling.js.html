@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/14</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/6</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/14</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -239,8 +239,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -278,7 +278,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { debugMode, errorTypes } from '../config.js';
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >serverErrorFound(</span>res, err, errMessage) {
-<span class="cstat-no" title="statement not covered" >  console.log('Error occured in server operation: ', err);</span>
+<span class="cstat-no" title="statement not covered" >  console.log('Error occured in server operation: ', err, '\n');</span>
 <span class="cstat-no" title="statement not covered" >  res.status(500).json({</span>
     app: {
       error: {
@@ -290,7 +290,7 @@ export function <span class="fstat-no" title="function not covered" >serverError
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >dbOperationError(</span>res, err, errMessage) {
-<span class="cstat-no" title="statement not covered" >  console.log('Error occured in executing DB operation: ', err);</span>
+<span class="cstat-no" title="statement not covered" >  console.log('Error occured in executing DB operation: ', err, '\n');</span>
 <span class="cstat-no" title="statement not covered" >  res.status(500).json({</span>
     app: {
       error: {
@@ -302,7 +302,7 @@ export function <span class="fstat-no" title="function not covered" >dbOperation
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >executionError(</span>res, status, errType, errMessage) {
-<span class="cstat-no" title="statement not covered" >  console.log('Error occured in an operation');</span>
+<span class="cstat-no" title="statement not covered" >  console.log('Error occured in an operation\n');</span>
 <span class="cstat-no" title="statement not covered" >  res.status(status).json({</span>
     app: {
       error: {
@@ -347,9 +347,9 @@ export function <span class="fstat-no" title="function not covered" >executionEr
  * @param {ErrorTypes} errorType 
  * @param {StatusCode} status 
  */
-export function badInputError(res, errorFields, errorType, status) {
-  console.log('Client supplied bad input: ', errorFields);
-  res.status(status || 400).json({
+export function <span class="fstat-no" title="function not covered" >badInputError(</span>res, errorFields, errorType, status) {
+<span class="cstat-no" title="statement not covered" >  console.log('Client supplied bad input: ', errorFields, '\n');</span>
+<span class="cstat-no" title="statement not covered" >  res.status(status || 400).json({</span>
     app: {
       error: {
         type: errorType || errorTypes.inputerror,
@@ -360,7 +360,7 @@ export function badInputError(res, errorFields, errorType, status) {
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >emptyRequestBodyError(</span>res) {
-<span class="cstat-no" title="statement not covered" >  console.log('No data found in request body');</span>
+<span class="cstat-no" title="statement not covered" >  console.log('No data found in request body \n');</span>
   const errMessage = <span class="cstat-no" title="statement not covered" >'Required data not found';</span>
 <span class="cstat-no" title="statement not covered" >  res.status(400).json({</span>
     app: {
@@ -373,7 +373,7 @@ export function <span class="fstat-no" title="function not covered" >emptyReques
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >emptyRequestQueryError(</span>res) {
-<span class="cstat-no" title="statement not covered" >  console.log('No data passed in request query');</span>
+<span class="cstat-no" title="statement not covered" >  console.log('No data passed in request query \n');</span>
   const errMessage = <span class="cstat-no" title="statement not covered" >'Required data not found';</span>
 <span class="cstat-no" title="statement not covered" >  res.status(400).json({</span>
     app: {
@@ -391,7 +391,7 @@ export function <span class="fstat-no" title="function not covered" >emptyReques
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Oct 19 2021 20:34:01 GMT+0100 (British Summer Time)
+                at Wed Oct 20 2021 18:11:59 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

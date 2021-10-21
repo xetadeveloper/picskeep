@@ -1,30 +1,60 @@
 // Modules
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef } from 'react';
 import { profileReducer, initialState } from './profileState';
 import { connect } from 'react-redux';
+
+// Redux
+import { deleteAccount, updateProfile } from '../../Redux/Actions/httpActions';
 
 // Styles
 import style from './profile.module.css';
 
 // Components
 import PagePrompt from '../../Components/PagePrompt/pagePrompt';
-import { FiSettings, FiTrash } from 'react-icons/fi';
+import { FiCamera, FiLoader, FiSettings, FiTrash } from 'react-icons/fi';
 import Modal from '../../Components/Modals/modal';
 import defaultUserPic from '../../Images/user icon.png';
 import ScrollTop from '../../Components/ScrollTop/scrollTop';
 import PageHeader from '../../Components/PageHeaderEdit/pageHeaderEdit';
+import {
+  getImage,
+  getPresignedUrl,
+  putImage,
+  putPresignedUrl,
+} from '../../Utils/utils';
+import { useShowError } from '../../Custom Hooks/customHooks';
+import { FaSpinner } from 'react-icons/fa';
+import { errorTypes } from '../../config';
 
-function Profile({ userInfo }) {
+function Profile({ userInfo, deleteUser, updateUser }) {
   const [state, dispatch] = useReducer(profileReducer, initialState);
 
-  const { formData, editMode, modalState } = state;
+  const { profilePic } = userInfo || {};
 
+  // const demoProfilePic = { fileName: 'newfile.jpg', s3Key: 'newfile.jpg' };
+  const showError = useShowError();
+
+  const { formData, editMode, modalState, selectedPic } = state;
+  const { userPic, processOn } = state;
+  const fileRef = useRef();
   // console.log('FormData: ', formData);
 
+  // console.log('User Pic: ', userPic);
+
+  // Sets the value of the form from userInfo
   useEffect(() => {
     // console.log('Running Effect');
     dispatch({ type: 'setinitialform', payload: userInfo });
   }, [userInfo]);
+
+  // How to tell the application when the update is finished?????
+
+  // Renders the initial profile picture
+  useEffect(() => {
+    if (!userPic) {
+      setInitialImgSrc();
+    }
+  }, [userPic]);
 
   // Handles input change
   function handleChange(evt) {
@@ -35,7 +65,62 @@ function Profile({ userInfo }) {
   }
 
   /** Updates the profile*/
-  function updateProfile() {}
+  async function updateProfile() {
+    dispatch({ type: 'setProcessOn' });
+
+    // first call for put presigned url if profile picture was changed
+    if (selectedPic) {
+      // Upload picture to s3
+      const info = await putPresignedUrl(selectedPic.name);
+
+      if (info.status == 200) {
+        const putRes = await putImage(info.data.signedUrl, selectedPic);
+
+        if (putRes.status === 200) {
+          // On success send information to server to be stored
+          updateDB();
+        } else {
+          showError({
+            type: errorTypes.uploaderror,
+            message:
+              `Unable to upload profile picture. Contact Support: ` +
+              putRes.error,
+          });
+        }
+      } else {
+        showError({
+          type: errorTypes.uploaderror,
+          message: `Unable to get signed URl. Contact Support: ` + info.error,
+        });
+      }
+    } else {
+      updateDB();
+    }
+
+    // When update is finished
+    // dispatch({ type: 'setProcessOff' });
+  }
+
+  function updateDB() {
+    const data = {};
+
+    // Sort out what needs to be updated
+    for (let elem in formData) {
+      if (!(formData[elem] === initialState[elem])) {
+        // console.log(`${elem} is different from initial`);
+        data[elem] = formData[elem].value;
+      }
+    }
+
+    if (selectedPic) {
+      data.profilePic = {
+        fileName: selectedPic.name,
+      };
+    }
+
+    // Send to server
+    updateUser({ data });
+  }
 
   // Sets the modal state
   function setModalState(newState) {
@@ -51,6 +136,7 @@ function Profile({ userInfo }) {
       actionHandler: () => {
         console.log('Deleting Account...');
         // call redux delete account
+        deleteUser();
       },
     });
   }
@@ -64,11 +150,65 @@ function Profile({ userInfo }) {
         message: 'Discard Changes?',
         actionHandler: () => {
           setModalState({ show: false });
-          dispatch({ type: 'editMode', payload: false });
+          dispatch({ type: 'editModeOff' });
         },
       });
     } else {
       dispatch({ type: 'editMode', payload: true });
+    }
+  }
+
+  function handleImageChange(evt) {
+    fileRef.current.click();
+  }
+
+  function handleFileChoose(evt) {
+    const file = evt.target.files[0];
+    dispatch({ type: 'selectPic', payload: file });
+  }
+
+  // Computes the src image for the img tag for initial render
+  async function setInitialImgSrc() {
+    if (selectedPic) {
+      console.log('Pic was selected');
+      dispatch({
+        type: 'setUserPic',
+        payload: URL.createObjectURL(selectedPic),
+      });
+    } else if (profilePic && profilePic.fileName) {
+      console.log('Gettinf profile pic form s3');
+      // get picture from s3 and return
+      // const info = await getPresignedUrl(profilePic.s3Key);
+      const info = await getPresignedUrl('newfile.jpg');
+
+      if (info && info.status === 200) {
+        const response = await getImage(info.data.signedUrl);
+
+        if (response && response.status === 200) {
+          dispatch({
+            type: 'setUserPic',
+            payload: URL.createObjectURL(response.image),
+          });
+        } else {
+          showError({
+            type: 'inputerror',
+            message:
+              'Error in fetching signed url for profile pic: ' + info.error,
+          });
+        }
+      } else {
+        showError({
+          type: 'inputerror',
+          message:
+            'Error in fetching signed url for profile pic: ' + info.error,
+        });
+      }
+    } else {
+      console.log('Returning default picture');
+      dispatch({
+        type: 'setUserPic',
+        payload: defaultUserPic,
+      });
     }
   }
 
@@ -88,75 +228,104 @@ function Profile({ userInfo }) {
       {/* Form Body */}
       <main
         className={`flex flex-col justify-center align-center ${style.mainBody} ${style.container}`}>
-        <div className={`${style.imgContainer}`}>
-          <div></div>
-          <div className={`${style.profilePic}`}>
-            <img
-              alt={`profile image`}
-              className={`${style.imgHolder}`}
-              src={defaultUserPic}
+        <div className={`flex justify-center align-center ${style.infoHolder}`}>
+          {/* Image Container */}
+          <div className={`${style.imgContainer}`}>
+            <input
+              type='file'
+              hidden
+              ref={fileRef}
+              onChange={handleFileChoose}
             />
+
+            <div
+              className={`flex justify-center align-center ${style.profilePic}`}>
+              {editMode && (
+                <div
+                  onClick={handleImageChange}
+                  className={`flex justify-center align-center ${style.fileBtn}`}>
+                  <FiCamera className={`${style.fileIcon}`} />
+                </div>
+              )}
+
+              {!userPic ? (
+                <div className={`flex align-center justify-center`}>
+                  <FaSpinner
+                    className={`iconRotate dark-text ${style.spinIcon}`}
+                  />
+                </div>
+              ) : (
+                <img
+                  src={userPic}
+                  alt={`profile image`}
+                  className={`${style.imgHolder}`}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Profile Form  */}
+          <div
+            className={`flex flex-col justify-center align-center ${style.detailHolder}`}>
+            <div className={`${style.detailItem}`}>
+              <label className={`${style.detailLabel}`}>
+                <h5>Username</h5>
+              </label>
+              <input
+                type='text'
+                placeholder='Username'
+                value={formData.username}
+                onChange={handleChange}
+                name='username'
+                disabled={!editMode}
+                className={`dark-text ${style.detailInput}`}
+              />
+            </div>
+            <div className={`${style.detailItem}`}>
+              <label className={`${style.detailLabel}`}>
+                <h5>First Name</h5>
+              </label>
+              <input
+                type='text'
+                placeholder='First Name'
+                value={formData.firstName}
+                onChange={handleChange}
+                name='firstName'
+                disabled={!editMode}
+                className={`dark-text ${style.detailInput}`}
+              />
+            </div>
+            <div className={`${style.detailItem}`}>
+              <label className={`${style.detailLabel}`}>
+                <h5>Last Name</h5>
+              </label>
+              <input
+                type='text'
+                placeholder='Last Name'
+                value={formData.lastName}
+                onChange={handleChange}
+                name='lastName'
+                disabled={!editMode}
+                className={`dark-text ${style.detailInput}`}
+              />
+            </div>
+            <div className={`${style.detailItem}`}>
+              <label className={`${style.detailLabel}`}>
+                <h5>Email</h5>
+              </label>
+              <input
+                type='text'
+                placeholder='Email'
+                value={formData.email}
+                onChange={handleChange}
+                name='email'
+                disabled={!editMode}
+                className={`dark-text ${style.detailInput}`}
+              />
+            </div>
           </div>
         </div>
-        <div
-          className={`flex flex-col justify-center align-center ${style.detailHolder}`}>
-          <div className={`${style.detailItem}`}>
-            <label className={`${style.detailLabel}`}>
-              <h5>Username</h5>
-            </label>
-            <input
-              type='text'
-              placeholder='Username'
-              value={formData.username}
-              onChange={handleChange}
-              name='username'
-              disabled={!editMode}
-              className={`dark-text ${style.detailInput}`}
-            />
-          </div>
-          <div className={`${style.detailItem}`}>
-            <label className={`${style.detailLabel}`}>
-              <h5>First Name</h5>
-            </label>
-            <input
-              type='text'
-              placeholder='First Name'
-              value={formData.firstName}
-              onChange={handleChange}
-              name='firstName'
-              disabled={!editMode}
-              className={`dark-text ${style.detailInput}`}
-            />
-          </div>
-          <div className={`${style.detailItem}`}>
-            <label className={`${style.detailLabel}`}>
-              <h5>Last Name</h5>
-            </label>
-            <input
-              type='text'
-              placeholder='Last Name'
-              value={formData.lastName}
-              onChange={handleChange}
-              name='lastName'
-              disabled={!editMode}
-              className={`dark-text ${style.detailInput}`}
-            />
-          </div>
-          <div className={`${style.detailItem}`}>
-            <label className={`${style.detailLabel}`}>
-              <h5>Email</h5>
-            </label>
-            <input
-              type='text'
-              placeholder='Email'
-              value={formData.email}
-              onChange={handleChange}
-              name='email'
-              disabled={!editMode}
-              className={`dark-text ${style.detailInput}`}
-            />
-          </div>
-        </div>
+
         {/* Update Buttons */}
         {editMode && (
           <div
@@ -164,12 +333,18 @@ function Profile({ userInfo }) {
             <button
               type='button'
               className={`dark-text ${style.btn}`}
+              disabled={processOn}
               onClick={updateProfile}>
-              <h5>Update Profile</h5>
+              {processOn ? (
+                <FiLoader className={`iconRotate dark-text`} />
+              ) : (
+                <h5>Update Profile</h5>
+              )}
             </button>
             <button
               type='button'
               className={`dark-text ${style.btn}`}
+              disabled={processOn}
               onClick={handleEditMode}>
               <h5>Cancel</h5>
             </button>
@@ -187,7 +362,18 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    deleteUser: () =>
+      dispatch(deleteAccount({ fetchBody: {}, method: 'POST' })),
+    updateUser: fetchBody =>
+      dispatch(
+        updateProfile({
+          fetchBody: fetchBody,
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ),
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

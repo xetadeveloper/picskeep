@@ -1,49 +1,138 @@
 import {
-    GET_FAILED,
-    GET_SUCCESSFUL,
-    POST_FAILED,
-    POST_SUCCESSFUL,
-    RESTORE_SESSION,
-  } from "../ActionTypes/httpActionTypes";
-  
-  // Http Actions
-  export function restoreSession(payload) {
-    if (payload) {
-      payload.url = "/api/restoreSession";
-    }
-  
-    return {
-      type: RESTORE_SESSION,
-      payload,
+  CREATE_PIC,
+  DELETE_ACCOUNT,
+  DELETE_PIC,
+  GET_FAILED,
+  GET_SUCCESSFUL,
+  GET_URL,
+  POST_FAILED,
+  POST_SUCCESSFUL,
+  PUT_URLS,
+  RESTORE_SESSION,
+  UPDATE_PIC,
+  UPDATE_PROFILE,
+} from '../ActionTypes/httpActionTypes';
+
+function addFetchOptions(payload, url) {
+  payload.url = url;
+  payload.httpMiddleware = true;
+  if (payload.method.toLowerCase() !== 'get') {
+    payload.headers = {
+      'Content-Type': 'application/json',
     };
   }
-  
-  export function postSuccessful(payload) {
-    return {
-      type: POST_SUCCESSFUL,
-      payload,
-    };
+}
+
+// Http Actions
+export function restoreSession(payload) {
+  if (payload) {
+    payload.url = '/api/restoreSession';
+    payload.httpMiddleware = true;
   }
-  
-  export function postFailed(payload) {
-    return {
-      type: POST_FAILED,
-      payload,
-    };
+
+  return {
+    type: RESTORE_SESSION,
+    payload,
+  };
+}
+
+export function postSuccessful(payload) {
+  return {
+    type: POST_SUCCESSFUL,
+    payload,
+  };
+}
+
+export function postFailed(payload) {
+  return {
+    type: POST_FAILED,
+    payload,
+  };
+}
+
+export function getFailed(payload) {
+  return {
+    type: GET_FAILED,
+    payload,
+  };
+}
+export function getSuccessful(payload) {
+  return {
+    type: GET_SUCCESSFUL,
+    payload,
+  };
+}
+
+// ============= Picture Actions ============
+export function deletePicture(payload) {
+  if (payload) {
+    payload.url = '/api/picture/delete';
+    payload.httpMiddleware = true;
   }
-  
-  export function getFailed(payload) {
-    return {
-      type: GET_FAILED,
-      payload,
-    };
+
+  return {
+    type: DELETE_PIC,
+    payload,
+  };
+}
+
+export function createPicture(payload) {
+  if (payload) {
+    payload.url = '/api/picture/create';
+    payload.httpMiddleware = true;
   }
-  export function getSuccessful(payload) {
-    return {
-      type: GET_SUCCESSFUL,
-      payload,
-    };
+
+  return {
+    type: CREATE_PIC,
+    payload,
+  };
+}
+
+export function updatePicture(payload) {
+  if (payload) {
+    payload.url = '/api/picture/update';
+    payload.httpMiddleware = true;
   }
-  
-  
-  
+
+  return {
+    type: UPDATE_PIC,
+    payload,
+  };
+}
+
+export function getPutUrls(payload) {
+  if (payload) {
+    payload.url = '/api/putMultipleSignedUrls';
+    payload.httpMiddleware = true;
+  }
+
+  return {
+    type: PUT_URLS,
+    payload,
+  };
+}
+
+// ============= Profile Actions ============
+export function deleteAccount(payload) {
+  if (payload) {
+    payload.url = '/api/profile/delete';
+    payload.httpMiddleware = true;
+  }
+
+  return {
+    type: DELETE_ACCOUNT,
+    payload,
+  };
+}
+
+export function updateProfile(payload) {
+  if (payload) {
+    payload.url = '/api/profile/update';
+    payload.httpMiddleware = true;
+  }
+
+  return {
+    type: UPDATE_PROFILE,
+    payload,
+  };
+}

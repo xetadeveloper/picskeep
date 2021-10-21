@@ -40,14 +40,6 @@ router.get('/getUserInfo', async (req, res) => {
       console.log('Found User before adding url: ', foundUser);
 
       if (foundUser) {
-        // Create presigned urls for pictures and add them to picture array
-        const { pictures } = foundUser;
-
-        foundUser.pictures = pictures.map(picture => {
-          picture.url = getS3SignedUrl('get', picture.fileName);
-          return picture;
-        });
-
         console.log('Found User after adding url: ', foundUser);
         res.status(200).json({
           app: { userInfo: foundUser },
@@ -69,53 +61,65 @@ router.get('/getUserInfo', async (req, res) => {
 });
 
 // Gets one aws signed url
-router.get('/getSignedUrl', hasData, async (req, res) => {
-  const { fileName } = req.body.data;
+router.post('/getSignedUrl', hasData, async (req, res) => {
+  const { s3Key } = req.body.data;
+  // console.log('Sending aws get url...');
 
-  const signedUrl = getPresignedUrl(fileName);
-  console.log('Get Signed Url: ', signedUrl);
+  const signedUrl = await getPresignedUrl(s3Key);
+  // console.log('Get Signed Url: ', signedUrl);
 
-  res.status(200).json({ app: { getSignedUrl: { value: signedUrl } } });
+  res.status(200).json({ signedUrl });
 });
 
 // Gets multiple aws signed urls (mostly going to be used for uploading mutliple pictures)
-router.get('/getMultipleSignedUrls', hasData, async (req, res) => {
-  const { fileNames } = req.body.data;
+router.post('/getMultipleSignedUrls', hasData, async (req, res) => {
+  const { fileNames, folderPath } = req.body.data;
+  const { username } = req.session;
 
-  const multipleUrls = fileNames.map(fileName => {
-    return { fileName: fileName, signedUrl: getPresignedUrl(fileName) };
-  });
+  const multipleUrls = await Promise.all(
+    fileNames.map(async fileName => {
+      const key = `${username}/${folderPath}/${fileName}`;
+      const signedUrl = await getPresignedUrl(key);
+      return { fileName, signedUrl };
+    })
+  );
 
   console.log('Signed Urls: ', multipleUrls);
 
-  res
-    .status(200)
-    .json({ app: { multipleSignedUrls: { value: multipleUrls } } });
+  res.status(200).json({ app: { getUrls: multipleUrls } });
 });
 
-// Send one PUT presigned url back to client
-router.get('/putSignedUrl', hasData, async (req, res) => {
+// Send one PUT presigned url back for profile uploading to client
+router.post('/putSignedUrl', hasData, async (req, res) => {
+  console.log('Sending aws put url');
   const { fileName } = req.body.data;
 
-  const signedUrl = putPresignedUrl(fileName);
-  console.log('Put Signed Url: ', signedUrl);
+  const { username } = req.session;
+  const key = `${username}/profile/${fileName}`;
 
-  res.status(200).json({ app: { putSignedUrl: { value: signedUrl } } });
+  const signedUrl = await putPresignedUrl(key);
+  // console.log('Put Signed Url: ', signedUrl);
+
+  res.status(200).json({ signedUrl });
 });
 
-// Send many PUT presigned urls back to client
-router.get('/putMultipleSignedUrls', hasData, async (req, res) => {
+// Send many PUT presigned urls for picture uploading back to client
+router.post('/putMultipleSignedUrls', hasData, async (req, res) => {
+  console.log('Generating put urls: ', req.body.data);
   const { fileNames } = req.body.data;
+  const { username } = req.session;
 
-  const multipleUrls = fileNames.map(fileName => {
-    return { fileName: fileName, signedUrl: putPresignedUrl(fileName) };
-  });
+  const multipleUrls = await Promise.all(
+    fileNames.map(async fileName => {
+      const key = `${username}/picture/${fileName}`;
+      const signedUrl = await putPresignedUrl(key);
+      return { fileName, signedUrl };
+    })
+  );
 
   console.log('Signed Urls: ', multipleUrls);
 
-  res
-    .status(200)
-    .json({ app: { multiplePutSignedUrls: { value: multipleUrls } } });
+  res.status(200).json({ app: { putUrls: multipleUrls } });
 });
 
 // ============ Routes for Pictures =============

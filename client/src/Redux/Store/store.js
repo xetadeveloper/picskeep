@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import httpMiddleware from '../Middleware/httpMiddleware';
+import s3Middleware from '../Middleware/s3Middleware';
 import appReducer from '../Reducers/appReducer';
 import flagReducer from '../Reducers/flagReducer';
 
@@ -8,7 +9,10 @@ const rootReducer = combineReducers({
   flags: flagReducer,
 });
 
-const store = createStore(rootReducer, applyMiddleware(httpMiddleware));
+const store = createStore(
+  rootReducer,
+  applyMiddleware(httpMiddleware, s3Middleware)
+);
 
 console.log("Store's Startup State", store.getState());
 store.subscribe(() => {

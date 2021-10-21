@@ -1,29 +1,32 @@
-import { v4 as genUUID } from 'uuid';
-import mongoTypes from 'mongodb';
 import Picture from '../Models/pictureModel.js';
 
-const { Double } = mongoTypes;
+const username = 'linda';
 
 export const dummyPictures = [
   {
     picID: 'picid1',
-    fileName: 'linda/picture/pic1.jpg',
+    fileName: 'userfile.jpg',
+    s3Key: `${username}/picture/userfile.jpg`,
   },
   {
     picID: 'picid2',
-    fileName: 'linda/picture/pic2.jpg',
+    fileName: 'pic2.jpg',
+    s3Key: `${username}/picture/pic2.jpg`,
   },
   {
     picID: 'picid3',
-    fileName: 'linda/picture/fancyPic.jpg',
+    fileName: 'fancyPic.jpg',
+    s3Key: `${username}/picture/fancyPic.jpg`,
   },
   {
     picID: 'picid4',
-    fileName: 'linda/picture/userPic.jfif',
+    fileName: 'userPic.jfif',
+    s3Key: `${username}/picture/userPic.jfif`,
   },
   {
     picID: 'pici55',
-    fileName: 'linda/picture/semPic.png',
+    fileName: 'semPic.png',
+    s3Key: `${username}/picture/semPic.png`,
   },
 ];
 

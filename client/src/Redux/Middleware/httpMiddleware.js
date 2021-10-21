@@ -1,7 +1,7 @@
 // Modules
 import { removeNull } from '../../Utils/utils';
 import { updateFlagState } from '../Actions/flagsActions';
-import { setFetchStatus } from '../Actions/appActions';
+import { setIsFetching } from '../Actions/appActions';
 import {
   getFailed,
   getSuccessful,
@@ -15,8 +15,8 @@ export default function httpMiddleware({ dispatch }) {
       const { payload } = action;
 
       if (payload && payload.httpMiddleware) {
-        console.log('Running fetch');
-        dispatch(setFetchStatus(true));
+        console.log('Running http fetch');
+        dispatch(setIsFetching(true));
 
         const { url, method, fetchBody, headers } = payload;
         console.log('Fetch Body: ', fetchBody);
@@ -26,13 +26,21 @@ export default function httpMiddleware({ dispatch }) {
           new FetchOptions(method, fetchBody, headers)
         );
 
+        // if (method !== 'GET' && !fetchOptions.headers) {
+        //   console.log('No headers found, adding JSON headers');
+        //   fetchOptions.headers = {
+        //     'Content-Type': 'application/json',
+        //   };
+        // }
         console.log('Fetch Options: ', fetchOptions);
+        // fetchOptions.body = fetchBody;
 
         // call fetch here
         fetch(url, fetchOptions)
           .then(response => response.json())
           .then(data => {
             console.log('Fetch Result: ', data);
+
             switch (method) {
               case 'GET':
                 if (data.app && data.app.error) {
@@ -55,7 +63,7 @@ export default function httpMiddleware({ dispatch }) {
                 break;
             }
 
-            dispatch(setFetchStatus(false));
+            dispatch(setIsFetching(false));
           });
       }
 

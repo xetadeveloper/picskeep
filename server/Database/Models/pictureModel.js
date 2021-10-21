@@ -4,6 +4,7 @@ export default class Picture {
   constructor(picture) {
     this.picID = '';
     this.fileName = '';
+    this.s3Key = '';
 
     if (picture) {
       Object.assign(this, picture);
@@ -14,10 +15,17 @@ export default class Picture {
     return removeNull.call(this);
   }
 
+  createS3Key(path) {
+    this.s3Key = `${path}/${this.fileName}`;
+
+    return this;
+  }
+
   convertToMongo() {
     const mongoTypes = {
       picID: this.picID,
       fileName: this.fileName,
+      s3Key: this.s3Key,
     };
 
     for (let prop in mongoTypes) {

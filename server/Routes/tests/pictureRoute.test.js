@@ -1,8 +1,17 @@
 import app from '../../server.js';
 import request from 'supertest';
-import { cleanupDB, insertToDB } from './Test Handlers/testHandlers.js';
+import {
+  cleanupDB,
+  clearUsersCollection,
+  insertToDB,
+} from './Test Handlers/testHandlers.js';
 import { plainDummyUsers } from '../../Database/Dummy/dummyUsers.js';
 import { errorTypes } from '../../config.js';
+import {
+  putPresignedUrl,
+  deleteMultipleObjects,
+  putObject,
+} from '../../S3/awsModule.js';
 
 let userInfo;
 let cookies;
@@ -14,14 +23,35 @@ const loginInfo = {
   },
 };
 
+// Objects that were created in S3 by tests
+const s3Objects = [];
+
 beforeAll(async () => {
+  s3Objects.push('userfile.jpg');
+  const signedUrl = await putPresignedUrl(
+    `${loginInfo.data.username}/picture/userfile.jpg`
+  );
+
+  const filePath = 'C:/Users/Fego/Pictures/Wallpapers/352112.jpg';
+  await putObject(signedUrl, filePath);
+});
+
+beforeEach(async () => {
   const info = await insertToDB();
   userInfo = info;
+});
+
+afterEach(async () => {
+  await clearUsersCollection();
 });
 
 afterAll(async () => {
   // Delete the dummy data (Create a util function for this for reusability in other tests)
   await cleanupDB();
+  console.log('Deleting ojects from s3: ', s3Objects);
+  await deleteMultipleObjects(
+    s3Objects.map(obj => `${loginInfo.data.username}/picture/${obj}`)
+  );
 });
 
 // Testing picture CRUD
@@ -46,11 +76,8 @@ describe('Testing the Update and Delete for picture routes', () => {
     delete appResData.password;
 
     test('Should update the file name of the picture', async () => {
-      const newFileName = 'newpic.jpg';
-      const id = 'picid1';
-      const expUserInfo = { ...appResData };
-
-      expUserInfo.pictures[0].fileName = newFileName;
+      const newFileName = 'copiedfile.jpg';
+      s3Objects.push(newFileName);
 
       const expFlag = { isUpdated: { value: true } };
 
@@ -59,73 +86,65 @@ describe('Testing the Update and Delete for picture routes', () => {
         .set('Accept', 'application/json')
         .set('Cookie', [cookies])
         .set('Content-Type', 'application/json')
-        .send({ data: { fileName: newFileName, picID: id } });
+        .send({
+          data: {
+            picture: appResData.pictures[0],
+            newFileName,
+          },
+        });
+
+      const expRes = {
+        ...appResData.pictures[0],
+        fileName: newFileName,
+        s3Key: `${loginInfo.data.username}/picture/${newFileName}`,
+      };
 
       const { userInfo } = res.body.app;
       const { isUpdated } = res.body.flags;
-
-      console.log('Update Result: ', userInfo);
-      console.log('Expected Update Result: ', expUserInfo);
+      console.log('Update Result: ', userInfo.pictures[0]);
+      console.log('Expected Update Result: ', expRes);
 
       // Assertions
-      expect(userInfo).toEqual(expUserInfo);
+      expect(userInfo.pictures[0]).toEqual(expRes);
       expect(isUpdated).toEqual(expFlag.isUpdated);
     });
+  });
 
-    test('Should update the size of the picture', async () => {
-      const newSize = 7000;
-      const id = 'picid1';
-      const expUserInfo = { ...appResData };
+  describe('Tests for creating a picture', () => {
+    const appResData = plainDummyUsers[0];
 
-      expUserInfo.pictures[0].size = newSize;
+    test('Should create a picture and add to picture list', async () => {
+      const newPic = {
+        picID: 'idfornewpic',
+        fileName: 'addedFile.jpg',
+      };
 
-      const expFlag = { isUpdated: { value: true } };
+      s3Objects.push(newPic.fileName);
 
       const res = await agent
-        .post('/api/picture/update')
+        .post('/api/picture/create')
         .set('Accept', 'application/json')
         .set('Cookie', [cookies])
         .set('Content-Type', 'application/json')
-        .send({ data: { size: newSize, picID: id } });
+        .send({ data: { picInfo: newPic } });
 
-      const { userInfo } = res.body.app;
-      const { isUpdated } = res.body.flags;
+      const expUserInfo = {
+        ...appResData,
+        pictures: [...appResData.pictures],
+      };
+      newPic.s3Key = `${loginInfo.data.username}/picture/${newPic.fileName}`;
+      expUserInfo.pictures.push(newPic);
 
-      console.log('Update Result: ', userInfo);
-      console.log('Expected Update Result: ', expUserInfo);
+      const expFlag = { isCreated: { value: true } };
 
-      // Assertions
-      expect(userInfo).toEqual(expUserInfo);
-      expect(isUpdated).toEqual(expFlag.isUpdated);
-    });
-
-    test('Should update both size and url of the picture', async () => {
-      const newSize = 7000;
-      const newUrl = 'newurlpath';
-      const id = 'picid1';
-      const expUserInfo = { ...appResData };
-
-      expUserInfo.pictures[0].size = newSize;
-      expUserInfo.pictures[0].url = newUrl;
-
-      const expFlag = { isUpdated: { value: true } };
-
-      const res = await agent
-        .post('/api/picture/update')
-        .set('Accept', 'application/json')
-        .set('Cookie', [cookies])
-        .set('Content-Type', 'application/json')
-        .send({ data: { size: newSize, url: newUrl, picID: id } });
-
-      const { userInfo } = res.body.app;
-      const { isUpdated } = res.body.flags;
-
-      console.log('Update Result: ', userInfo);
-      console.log('Expected Update Result: ', expUserInfo);
+      const { userInfo } = res.body.app || {};
+      const { isCreated } = res.body.flags || {};
 
       // Assertions
-      expect(userInfo).toEqual(expUserInfo);
-      expect(isUpdated).toEqual(expFlag.isUpdated);
+      // console.log('Received pictures: ', userInfo.pictures);
+      // console.log('Expected pictures: ', expUserInfo.pictures);
+      expect(userInfo.pictures).toEqual(expUserInfo.pictures);
+      expect(isCreated).toEqual(expFlag.isCreated);
     });
   });
 
@@ -133,8 +152,11 @@ describe('Testing the Update and Delete for picture routes', () => {
     const appResData = plainDummyUsers[0];
 
     test('Should delete picture with ID of picid1', async () => {
-      const id = 'picid1';
-      const expUserInfo = { ...appResData };
+      const expUserInfo = {
+        ...appResData,
+        pictures: [...appResData.pictures],
+      };
+
       expUserInfo.pictures.shift();
 
       const expFlag = { isDeleted: { value: true } };
@@ -144,7 +166,7 @@ describe('Testing the Update and Delete for picture routes', () => {
         .set('Accept', 'application/json')
         .set('Cookie', [cookies])
         .set('Content-Type', 'application/json')
-        .send({ data: { picID: id } });
+        .send({ data: { pic: appResData.pictures[0] } });
 
       const { userInfo } = res.body.app;
       const { isDeleted } = res.body.flags;
@@ -155,11 +177,10 @@ describe('Testing the Update and Delete for picture routes', () => {
     });
 
     test('Should not delete a picture given wrong ID', async () => {
-      const id = 'wrongid';
       const expRes = {
         app: {
           error: {
-            type: errorTypes.updateerror,
+            type: errorTypes.deleteerror,
             message: 'Could not delete picture. Contact Support',
           },
         },
@@ -170,7 +191,14 @@ describe('Testing the Update and Delete for picture routes', () => {
         .set('Accept', 'application/json')
         .set('Cookie', [cookies])
         .set('Content-Type', 'application/json')
-        .send({ data: { picID: id } });
+        .send({
+          data: {
+            pic: {
+              id: 'worngid',
+              filename: 'notusreexists.jpg',
+            },
+          },
+        });
 
       const { error } = res.body.app;
 
@@ -183,38 +211,6 @@ describe('Testing the Update and Delete for picture routes', () => {
       expect(res.body).toEqual(expRes);
     });
   });
-
-  describe('Tests for creating a picture', () => {
-    const appResData = plainDummyUsers[0];
-
-    test('Should create a picture and add to picture list', async () => {
-      const newPic = {
-        picID: 'idfornewpic',
-        url: 'mynewurlpath',
-        size: 17000,
-        fileName: 'pic967.jpg',
-      };
-      const expUserInfo = { ...appResData };
-      expUserInfo.pictures.push(newPic);
-
-      const expFlag = { isCreated: { value: true } };
-
-      const res = await agent
-        .post('/api/picture/create')
-        .set('Accept', 'application/json')
-        .set('Cookie', [cookies])
-        .set('Content-Type', 'application/json')
-        .send({ data: newPic });
-
-      const { userInfo } = res.body.app;
-      const { isCreated } = res.body.flags;
-
-      // Assertions
-      expect(userInfo).toEqual(expUserInfo);
-      expect(isCreated).toEqual(expFlag.isCreated);
-    });
-  });
 });
-
 
 //

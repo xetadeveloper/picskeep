@@ -15,17 +15,23 @@ const { updateerror } = errorTypes;
 
 const router = express.Router();
 
-// Deleting Picture
+// Deleting One Picture
 router.post('/delete', async (req, res) => {
   // delete the picture
   const { data } = req.body;
+  const { username } = req.session;
+
+  // console.log('Delete Data: ', data)
 
   try {
-    const picture = new Picture(data).removeEmptyFields();
-    console.log('Deleting Picture: ', picture);
+    const picture = new Picture(data.pic)
+      .createS3Key(`${username}/picture`)
+      .removeEmptyFields();
+
+    // console.log('Deleting Picture: ', picture);
 
     // Delete picture from s3
-    const ops = await deleteObject(picture.fileName);
+    const ops = await deleteObject(picture.s3Key);
 
     if (ops.statusCode === 200) {
       try {
@@ -70,32 +76,44 @@ router.post('/delete', async (req, res) => {
   }
 });
 
+// Deleting many pictures (To be done later)
+
 // Updating picture
 router.post('/update', async (req, res) => {
   const { data } = req.body;
-  const { oldFileName, newFileName, username } = data;
-  const newBaseKey = `${username}/picture/${newFileName}`;
+  const { picture, newFileName } = data;
+  // console.log('Updating picture: ', data);
+
+  const { username } = req.session;
+  const oldPic = new Picture(picture).createS3Key(`${username}/picture`);
+
+  const newPic = new Picture({
+    ...picture,
+    fileName: newFileName,
+  }).createS3Key(`${username}/picture`);
 
   try {
-    const ops = await renameObject(oldFileName, newBaseKey);
+    const ops = await renameObject(oldPic.s3Key, newPic.s3Key);
 
     if (ops.statusCode === 200) {
-      console.log('Updating picture: ', data);
       const { userID } = req.session;
       const db = await getDBInstance();
       const users = db.collection('users');
 
-      const picture = new Picture(data).removeEmptyFields().convertToMongo();
-
-      const propPic = appendPropertyName({ ...picture }, 'pictures.$');
+      const propPic = appendPropertyName(
+        { ...newPic.removeEmptyFields().convertToMongo() },
+        'pictures.$'
+      );
 
       // console.log('Picture to update: ', propPic);
 
       try {
         const updateRes = await users.updateOne(
-          { _id: ObjectId(userID), 'pictures.picID': picture.picID },
+          { _id: ObjectId(userID), 'pictures.picID': newPic.picID },
           { $set: propPic }
         );
+
+        // console.log('Update response: ', updateRes);
 
         if (updateRes.acknowledged && updateRes.modifiedCount) {
           // Fetch the information
@@ -103,6 +121,8 @@ router.post('/update', async (req, res) => {
             { _id: ObjectId(userID) },
             { projection: { password: 0, _id: 0 } }
           );
+
+          // console.log('info: ', info);
 
           res.status(200).json({
             app: { userInfo: info },
@@ -130,12 +150,14 @@ router.post('/update', async (req, res) => {
 // Creating picture
 router.post('/create', async (req, res) => {
   const { data } = req.body;
+  const { picInfo } = data;
+  const { username } = req.session;
 
-  data.fileName = `${data.username}/picture/${data.fileName}`;
-  
   try {
-    const picture = new Picture(data).removeEmptyFields().convertToMongo();
-    console.log('Creating picture: ', picture);
+    const picture = new Picture(picInfo)
+      .createS3Key(`${username}/picture`)
+      .removeEmptyFields();
+    // console.log('Creating picture: ', picture);
 
     const { userID } = req.session;
     const db = await getDBInstance();
@@ -144,7 +166,7 @@ router.post('/create', async (req, res) => {
     try {
       const updateRes = await users.updateOne(
         { _id: ObjectId(userID) },
-        { $push: { pictures: picture } }
+        { $push: { pictures: picture.convertToMongo() } }
       );
 
       if (updateRes.acknowledged && updateRes.modifiedCount) {
@@ -156,15 +178,27 @@ router.post('/create', async (req, res) => {
 
         res.status(200).json({
           app: { userInfo: info },
-          flags: { isUpdated: { value: true } },
+          flags: { isCreated: { value: true } },
         });
       } else {
-        executionError(
-          res,
-          500,
-          updateerror,
-          'Could not delete picture. Contact Support'
-        );
+        // Delete picture from s3
+        const delRes = await deleteObject(picture.s3Key);
+
+        if (delRes.statusCode === 200) {
+          executionError(
+            res,
+            500,
+            updateerror,
+            'Could not add picture to DB. Contact Support'
+          );
+        } else {
+          executionError(
+            res,
+            500,
+            updateerror,
+            'Could not add picture to DB and failed to delete picture from storage. Contact Support'
+          );
+        }
       }
     } catch (err) {
       dbOperationError(res, err, dbOpErrorMsg);

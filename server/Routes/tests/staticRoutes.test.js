@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Delete the dummy data (Create a util function for this for reusability in other tests)
-  await cleanupDB();
+  await cleanupDB(true);
 });
 
 describe('Static Routes Tests', () => {

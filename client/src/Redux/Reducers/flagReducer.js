@@ -1,13 +1,11 @@
 import {
-  FETCH_STATUS,
   UPDATE_FLAG_STATE,
 } from '../ActionTypes/flagsActionTypes';
 
 const initialState = {
   isUpdated: { value: false },
   isDeleted: { value: false },
-  isCreated: { value: false },
-  isFetching: false,
+  isCreated: { value: true },
 };
 
 export default function flagReducer(state = initialState, action) {

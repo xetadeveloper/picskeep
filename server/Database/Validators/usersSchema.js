@@ -2,6 +2,7 @@
 import folderSchema from './folderSchema.js';
 import pictureSchema from './pictureSchema.js';
 import preferencesSchema from './preferencesSchema.js';
+import profilePicSchema from './profilePicSchema.js';
 
 // Use the models to create dummy data
 const dummyData = {};
@@ -32,18 +33,17 @@ const usersSchema = {
         storageUsed: {
           bsonType: 'double',
         },
-        profilePicName: {
-          bsonType: 'string',
-        },
-        // folders: {
-        //   bsonType: 'array',
-        //   items: { ...folderSchema.validator.$jsonSchema },
-        // },
         pictures: {
           bsonType: 'array',
           items: { ...pictureSchema.validator.$jsonSchema },
         },
+        profilePic: { ...profilePicSchema.validator.$jsonSchema },
         preferences: { ...preferencesSchema.validator.$jsonSchema },
+
+        // folders: {
+        //   bsonType: 'array',
+        //   items: { ...folderSchema.validator.$jsonSchema },
+        // },
       },
     },
   },

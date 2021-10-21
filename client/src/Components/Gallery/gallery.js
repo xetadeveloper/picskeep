@@ -1,28 +1,16 @@
 // Modules
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { appMode } from '../../config';
 
 // Styles
 import style from './gallery.module.css';
 
 // Components
+import Picture from '../PictureHolder/pictureHolder';
 
 export default function Gallery({ pictures }) {
   function renderPictures() {
     return pictures.map((picture, index) => {
-      return (
-        <NavLink
-          key={index}
-          to={`/pictures?pictureID=${picture.fileID}`}
-          className={`flex flex-col align-center justify-between dark-text ${style.pictureItem}`}>
-          <img
-            src={appMode === 'dummy' ? picture.pic : picture.url}
-            className={`${style.picImg}`}
-          />
-          <h5>{picture.name}</h5>
-        </NavLink>
-      );
+      return <Picture picture={picture} key={index} />;
     });
   }
 

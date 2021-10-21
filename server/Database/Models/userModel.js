@@ -11,9 +11,9 @@ export default class User {
     this.lastName = '';
     this.email = '';
     this.storageUsed = 0;
-    this.profilePicName = 'N/A';
+    this.profilePic = {}
     this.pictures = [];
-    this.preferences = { saveSession: false };
+    this.preferences = {};
 
     if (user) {
       Object.assign(this, user);
@@ -32,8 +32,8 @@ export default class User {
     }
   }
 
-  removeEmptyFields() {
-    return removeNull.call(this);
+  removeEmptyFields(clearAll) {
+    return removeNull.call(this, clearAll);
   }
 
   convertToMongo() {
@@ -43,7 +43,7 @@ export default class User {
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
-      profilePicName: this.profilePicName,
+      profilePic: this.profilePic,
       storageUsed: this.storageUsed ? Double(this.storageUsed) : null,
       pictures: this.pictures,
       preferences: this.preferences,

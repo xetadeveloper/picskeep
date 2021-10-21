@@ -1,7 +1,7 @@
 import { debugMode, errorTypes } from '../config.js';
 
 export function serverErrorFound(res, err, errMessage) {
-  console.log('Error occured in server operation: ', err);
+  console.log('Error occured in server operation: ', err, '\n');
   res.status(500).json({
     app: {
       error: {
@@ -13,7 +13,7 @@ export function serverErrorFound(res, err, errMessage) {
 }
 
 export function dbOperationError(res, err, errMessage) {
-  console.log('Error occured in executing DB operation: ', err);
+  console.log('Error occured in executing DB operation: ', err, '\n');
   res.status(500).json({
     app: {
       error: {
@@ -25,7 +25,7 @@ export function dbOperationError(res, err, errMessage) {
 }
 
 export function executionError(res, status, errType, errMessage) {
-  console.log('Error occured in an operation');
+  console.log('Error occured in an operation\n');
   res.status(status).json({
     app: {
       error: {
@@ -71,7 +71,7 @@ export function executionError(res, status, errType, errMessage) {
  * @param {StatusCode} status 
  */
 export function badInputError(res, errorFields, errorType, status) {
-  console.log('Client supplied bad input: ', errorFields);
+  console.log('Client supplied bad input: ', errorFields, '\n');
   res.status(status || 400).json({
     app: {
       error: {
@@ -83,7 +83,7 @@ export function badInputError(res, errorFields, errorType, status) {
 }
 
 export function emptyRequestBodyError(res) {
-  console.log('No data found in request body');
+  console.log('No data found in request body \n');
   const errMessage = 'Required data not found';
   res.status(400).json({
     app: {
@@ -96,7 +96,7 @@ export function emptyRequestBodyError(res) {
 }
 
 export function emptyRequestQueryError(res) {
-  console.log('No data passed in request query');
+  console.log('No data passed in request query \n');
   const errMessage = 'Required data not found';
   res.status(400).json({
     app: {

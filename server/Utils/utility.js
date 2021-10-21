@@ -1,8 +1,21 @@
 /** To remove null or undefined values from an object */
-export function removeNull() {
+export function removeNull(clearAll) {
   for (let property in this) {
     if (!this[property]) {
+      // if primitive falsy value
       delete this[property];
+    } else if (clearAll) {
+      // If empty objects and arrays are to be removed too
+      if (typeof this[property] === 'array' && !this[property].length) {
+        // If empty array
+        delete this[property];
+      } else if (
+        typeof this[property] === 'object' &&
+        !Object.entries(this[property]).length
+      ) {
+        // If empty object
+        delete this[property];
+      }
     }
   }
   return this;

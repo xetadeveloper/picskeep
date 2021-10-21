@@ -46,7 +46,7 @@ router.post('/login', hasData, async (req, res) => {
   try {
     const { data } = req.body;
 
-    console.log('Logging user in: ', data);
+    // console.log('Logging user in: ', data);
 
     const { username, password, saveSession } = data;
     const db = await getDBInstance();
@@ -157,6 +157,8 @@ router.post('/signup', hasData, async (req, res) => {
       } else {
         // Hash password
         const hashedUser = await new User(data).hashPassword();
+        hashedUser.preferences.saveSession = false;
+
         const user = hashedUser.removeEmptyFields().convertToMongo();
         const { acknowledged } = await users.insertOne(user);
 

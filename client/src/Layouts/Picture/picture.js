@@ -1,6 +1,6 @@
 // Modules
-import React, { useState } from 'react';
-import { FiDownload, FiTrash } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { FiDownload, FiLoader, FiSun, FiTrash } from 'react-icons/fi';
 
 // Redux
 import { connect } from 'react-redux';
@@ -13,13 +13,16 @@ import style from './picture.module.css';
 // Components
 import ScrollTop from '../../Components/ScrollTop/scrollTop';
 import Modal from '../../Components/Modals/modal';
+import { getImage, getPresignedUrl } from '../../Utils/utils';
+import { useShowError } from '../../Custom Hooks/customHooks';
+import { deletePicture, updatePicture } from '../../Redux/Actions/httpActions';
 
-function Picture({ pictures }) {
+function Picture({ pictures, deletePicture, updatePicture }) {
   const pictureID = new URLSearchParams(useLocation().search).get('pictureID');
   const [modalState, setModalState] = useState({ show: false });
 
   //   const picture =
-  //     pictures && pictures.find(picture => picture.fileID === pictureID);
+  //     pictures && pictures.find(picture => picture.picID === pictureID);
 
   const picture =
     dummyPictures &&
@@ -28,8 +31,25 @@ function Picture({ pictures }) {
   // States
   const [picName, setPicName] = useState(picture ? picture.name : '');
   const [txtFocus, setTxtFocus] = useState(false);
+  const [picUrl, setPicUrl] = useState(null);
 
-  //   console.log('Picture: ', picture);
+  console.log('Picture: ', picUrl);
+  const showError = useShowError();
+
+  // For fetching the pic url from server
+  useEffect(async () => {
+    console.log('Fetching url from server');
+    const info = await getPresignedUrl('newfile.jpg');
+
+    if (info.status === 200) {
+      setPicUrl(info.data.signedUrl);
+    } else {
+      showError({
+        type: 'inputerror',
+        message: 'Error in fetching signed url: ' + info.error,
+      });
+    }
+  }, [setPicUrl]);
 
   function handleInputChange(evt) {
     const inputVal = evt.target.value;
@@ -37,16 +57,38 @@ function Picture({ pictures }) {
   }
 
   // Updates the picture name if the input lost focus
-  function updatePicName() {
+  function updatePicName(evt) {
     //   Update the picture name
     if (txtFocus) {
       // Run update
       setTxtFocus(false);
+      console.log('PicName: ', picName);
+      console.log('New PicName: ', picture.fileName);
+      if (picName !== picture.fileName) {
+        updatePicture({ data: { picture: picture, newFileName: picName } });
+      }
     }
   }
 
-  function downloadPic() {
-    // Download the picture
+  // Downloads the picture
+  async function downloadPic() {
+    const info = await getPresignedUrl('newfile.jpg');
+
+    if (info.status === 200) {
+      const link = document.createElement('a');
+      link.href = info.data.signedUrl;
+      link.setAttribute('hidden', true);
+      link.setAttribute('download', 'image.jpg');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // console.log('Image downloaded...');
+    } else {
+      showError({
+        type: 'inputerror',
+        message: 'Error in fetching signed url for download: ' + info.error,
+      });
+    }
   }
 
   function deletePic() {
@@ -57,6 +99,7 @@ function Picture({ pictures }) {
       message: 'Delete Picture?',
       actionHandler: () => {
         // Run delete here
+        deletePicture({ data: { pic: picture } });
       },
     });
   }
@@ -100,11 +143,20 @@ function Picture({ pictures }) {
 
       {/* Pic Viewer */}
       <section className={`${style.container} ${style.viewer}`}>
-        <img src={picture.pic} className={`${style.picImg}`} />
+        <div
+          className={`flex justify-center align-center ${style.picImgHolder} ${
+            picUrl && style.picHeight
+          }`}>
+          {picUrl ? (
+            <img src={picUrl} className={`${style.picImg}`} alt='' />
+          ) : (
+            <FiSun className={`iconRotate ${style.loadingIcon}`} />
+          )}
+        </div>
       </section>
 
       {/* Show picture details here */}
-      <section></section>
+      <section>Show Picture Details here</section>
     </section>
   );
 }
@@ -116,7 +168,25 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    deletePicture: fetchBody =>
+      dispatch(
+        deletePicture({
+          fetchBody: fetchBody,
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ),
+
+    updatePicture: fetchBody =>
+      dispatch(
+        updatePicture({
+          fetchBody: fetchBody,
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ),
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Picture);

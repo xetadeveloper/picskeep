@@ -17,40 +17,67 @@ import {
 import bcrypt from 'bcrypt';
 import { hasData } from '../../Middleware/middleware.js';
 import User from '../../Database/Models/userModel.js';
+import { deleteMultipleObjects } from '../../S3/awsModule.js';
 
 const router = express.Router();
 
 router.post('/delete', async (req, res) => {
-  console.log('Deleting account');
+  console.log('Deleting account...');
 
   try {
     //   First delete all pictures from s3
-
-    // const userID = ObjectId(req.session.userID);
     const { userID } = req.session;
     const db = await getDBInstance();
     const users = db.collection('users');
 
     try {
       // Delete account from db
+      const userInfo = await users.findOne({ _id: ObjectId(userID) });
+      // console.log('UserInfo: ', userInfo);
 
-      const delRes = await users.deleteOne({ _id: userID });
+      const delPics = userInfo.pictures.map(picture => picture.s3Key);
 
-      console.log('Delete response: ', delRes);
+      // add profile picture to list
+      delPics.push(userInfo.profilePic.s3Key);
 
-      if (delRes.acknowledged && delRes.deletedCount) {
-        req.session.destroy();
+      // console.log('Deleting accout pictures: ', delPics);
 
-        res.status(200).json({
-          app: { isLoggedIn: false },
-          flags: { isDeleted: { value: true } },
-        });
-      } else {
-        executionError(
+      try {
+        const s3Del = await deleteMultipleObjects(delPics);
+
+        if (s3Del.statusCode === 200) {
+          const delRes = await users.deleteOne({ _id: ObjectId(userID) });
+
+          // console.log('Delete response: ', delRes);
+
+          if (delRes.acknowledged && delRes.deletedCount) {
+            req.session.destroy();
+
+            res.status(200).json({
+              app: { isLoggedIn: false },
+              flags: { isDeleted: { value: true } },
+            });
+          } else {
+            executionError(
+              res,
+              500,
+              errorTypes.deleteerror,
+              'Could not delete user account. Contact Support'
+            );
+          }
+        } else {
+          executionError(
+            res,
+            500,
+            errorTypes.deleteerror,
+            'Unable to delete user pictures from storage. Contact Support'
+          );
+        }
+      } catch (err) {
+        serverErrorFound(
           res,
-          500,
-          errorTypes.deleteerror,
-          'Could not delete user account. Contact Support'
+          err,
+          'Error in deleting user objects from storage. Contact support'
         );
       }
     } catch (err) {
@@ -64,10 +91,14 @@ router.post('/delete', async (req, res) => {
 router.post('/update', hasData, async (req, res) => {
   try {
     const { data } = req.body;
-    // console.log('Data received in update: ', data);
-    console.log('Updating user: ', data);
-    data.profilePicName = `${data.username}/profile/${data.profilePicName}`;
-    const user = new User(data).removeEmptyFields().convertToMongo();
+    console.log('Data received in update: ', data);
+    const { username } = req.session;
+
+    if (data.profilePic && Object.entries(data.profilePic).length) {
+      data.profilePic.s3Key = `${username}/profile/${data.profilePic.fileName}`;
+    }
+
+    const user = new User(data).removeEmptyFields(true).convertToMongo();
 
     console.log('User info to update: ', user);
 
@@ -76,19 +107,22 @@ router.post('/update', hasData, async (req, res) => {
     const { userID } = req.session;
 
     try {
-      const update = await users.updateOne({ _id: userID }, { $set: user });
+      const update = await users.updateOne(
+        { _id: ObjectId(userID) },
+        { $set: user }
+      );
 
       const { acknowledged, modifiedCount } = update;
 
-      // console.log('Update Resulr: ', update);
+      console.log('Update Resulr: ', update);
 
       if (acknowledged && modifiedCount) {
         const result = await users.findOne(
-          { _id: userID },
+          { _id: ObjectId(userID) },
           { projection: { password: 0, _id: 0 } }
         );
 
-        // console.log('Find Result: ', result);
+        console.log('Find Result: ', result);
 
         if (result) {
           res.status(200).json({
@@ -103,6 +137,13 @@ router.post('/update', hasData, async (req, res) => {
             'Could not find user password. Contact Support'
           );
         }
+      } else {
+        executionError(
+          res,
+          500,
+          errorTypes.deleteerror,
+          'Unable to update user profile. Contact Support'
+        );
       }
     } catch (err) {
       dbOperationError(res, err, dbOpErrorMsg);

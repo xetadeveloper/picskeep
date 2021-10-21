@@ -19,6 +19,7 @@ import {
   noCodeBadResponse,
   getErrorObject,
 } from './s3ErrorHandlers.js';
+import path from 'path'
 
 // ============== S3 version 3 ================
 let client;
@@ -36,8 +37,10 @@ const corsConfig = [
   },
 ];
 
-/** Configures the S3 client*/
-async function configureS3Client(bucketName = awsBucketName) {
+/** Configures the S3 client
+ * @param {Boolean} upsertBucket If true, creates bucket if bucket does not exist
+ */
+async function configureS3Client(bucketName = awsBucketName, upsertBucket) {
   const config = {
     region: process.env.awsRegion,
     credentials: {
@@ -48,30 +51,32 @@ async function configureS3Client(bucketName = awsBucketName) {
 
   client = new S3Client(config);
 
-  const command = new ListBucketsCommand({});
+  if (upsertBucket) {
+    const command = new ListBucketsCommand({});
 
-  try {
-    const res = await client.send(command);
+    try {
+      const res = await client.send(command);
 
-    if (res.$metadata.httpStatusCode === 200) {
-      const bucketList = res.Buckets.map(bucket => bucket.Name);
-      // console.log('Buckets in S3: ', bucketList);
+      if (res.$metadata.httpStatusCode === 200) {
+        const bucketList = res.Buckets.map(bucket => bucket.Name);
+        // console.log('Buckets in S3: ', bucketList);
 
-      if (!bucketList.includes(bucketName)) {
-        console.log('Bucket was not found in S3. Creating bucket');
-        createNewBucket(bucketName, { publicAccess: false, cors: true });
+        if (!bucketList.includes(bucketName)) {
+          console.log('Bucket was not found in S3. Creating bucket...');
+          createNewBucket(bucketName, { publicAccess: false, cors: true });
+        }
+      } else {
+        // throw err in config
+        throw new Error(
+          `ListBucketsCommand operation was not successful: with error code of ${res.$metadata.httpStatusCode}
+          
+          Metadata: ${res.$metadata}`
+        );
       }
-    } else {
-      // throw err in config
-      throw new Error(
-        `ListBucketsCommand operation was not successful: with error code of ${res.$metadata.httpStatusCode}
-        
-        Metadata: ${res.$metadata}`
-      );
+    } catch (err) {
+      console.log('Error occured in configuring S3: ', err);
+      throw err;
     }
-  } catch (err) {
-    console.log('Error occured in configuring S3: ', err);
-    throw err;
   }
 }
 
@@ -89,7 +94,7 @@ async function blockPublicAccess(bucketName) {
     });
 
     const res = await client.send(command);
-    console.log('Block Public Access Response: ', res);
+    // console.log('Block Public Access Response: ', res);
     resStatus = res.$metadata.httpStatusCode;
 
     if (resStatus === 200) {
@@ -121,7 +126,7 @@ async function addCorsPolicy(bucketName, corsConfig) {
     });
 
     const res = await client.send(command);
-    console.log('Cors response: ', res);
+    // console.log('Cors response: ', res);
     resStatus = res.$metadata.httpStatusCode;
 
     if (resStatus === 200) {
@@ -162,7 +167,7 @@ async function createNewBucket(bucketName, { publicAccess, configureCors }) {
     const res = await client.send(command);
     createStatusCode = res.$metadata.httpStatusCode;
 
-    console.log('Create Bucket Response: ', res);
+    // console.log('Create Bucket Response: ', res);
     if (createStatusCode === 200) {
       let corsStatus = false;
       let publicAccessStatus = false;
@@ -172,7 +177,7 @@ async function createNewBucket(bucketName, { publicAccess, configureCors }) {
 
         try {
           publicAccessStatusCode = await blockPublicAccess(bucketName);
-          console.log('Statu: ', publicAccessStatusCode);
+          // console.log('Statu: ', publicAccessStatusCode);
 
           if (publicAccessStatusCode.statusCode === 200) {
             publicAccessStatus = true;
@@ -244,10 +249,12 @@ export function closeS3Client() {
   }
 }
 
-/** Returns the S3Client*/
-export async function getS3Client() {
+/** Returns the S3Client
+ * @param {Boolean} upsertBucket If true, creates bucket if bucket does not exist
+ */
+export async function getS3Client(upsertBucket) {
   if (!client) {
-    await configureS3Client();
+    await configureS3Client(upsertBucket);
   }
 
   return client;
@@ -278,9 +285,7 @@ export async function putPresignedUrl(key) {
   });
 
   const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
-  console.log('Put Signed Url: ', signedUrl);
-  const demoFilePath = 'C:/Users/Fego/Pictures/Wallpapers/352112.jpg';
-  await putObject(signedUrl, demoFilePath);
+  // console.log('Put Signed Url: ', signedUrl);
 
   return signedUrl;
 }
@@ -301,7 +306,7 @@ export async function copyObject(oldKey, newKey) {
     });
 
     const res = await client.send(command);
-    console.log('Copy response: ', res);
+    // console.log('Copy response: ', res);
     resStatus = res.$metadata.httpStatusCode;
 
     if (resStatus === 200) {
@@ -328,7 +333,7 @@ export async function deleteObject(key) {
 
     const res = await client.send(command);
     resStatus = res.$metadata.httpStatusCode;
-    console.log('Delete response: ', res.$metadata);
+    // console.log('Delete response: ', res.$metadata);
 
     if (resStatus === 204) {
       return { statusCode: 200 };
@@ -354,8 +359,7 @@ export async function deleteMultipleObjects(keys) {
   if (keys.length) {
     // Change the structure of array to S3 required format
     const delObjects = keys.map(key => {
-      console.log('Delete response: ', res.$metadata);
-      return { key: key };
+      return { Key: key };
     });
 
     try {
@@ -367,10 +371,10 @@ export async function deleteMultipleObjects(keys) {
       });
 
       const res = await client.send(command);
-      console.log('Delete response: ', res);
+      // console.log('Delete response: ', res);
       resStatus = res.$metadata.httpStatusCode;
 
-      if (resStatus === 204) {
+      if (resStatus === 200) {
         return { statusCode: 200 };
       } else {
         return badResponse('Object was not deleted', 500, resStatus);
@@ -398,7 +402,7 @@ export async function listBucketObjects(bucketName = awsBucketName) {
       new ListObjectsCommand({ Bucket: bucketName })
     );
 
-    console.log('Objects in Bucket: ', objects);
+    // console.log('Objects in Bucket: ', objects);
 
     return objects.Contents;
   } catch (err) {
@@ -432,14 +436,18 @@ export async function testAWSCommands() {
   // const newKey = 'copiedfile.jpg';
   // await renameObject(oldKey, newKey);
   // await createNewBucket(`test${v4()}`);
-  // await putPresignedUrl('newfile.jpg');
+  // await putPresignedUrl('linda/picture/userfile.jpg');
   // await addCorsPolicy(corsConfig);
   // await getPresignedUrl('newfile.jpg');
   // await listBucketObjects(awsBucketName);
   // await blockPublicAccess(awsBucketName);
+  const signedUrl = await putPresignedUrl(`newfile.jpg`);
+
+  const filePath = 'C:/Users/Fego/Pictures/Wallpapers/352112.jpg';
+  await putObject(signedUrl, filePath);
 }
 
-async function putObject(url, filePath) {
+export async function putObject(url, filePath) {
   // Just testing the put url
   const file = fs.readFileSync(filePath);
 
@@ -447,8 +455,13 @@ async function putObject(url, filePath) {
     url,
     method: 'put',
     data: file,
-    'Content-Type': 'image/jpg',
+    headers: {
+      'Content-Type': 'image/jpg',
+      'Content-Disposition': `attachment; filename=\"${path.basename(
+        filePath
+      )}\"`,
+    },
   });
 
-  console.log('Upload succesful? ', res.status);
+  console.log('Upload succesful? ', res);
 }

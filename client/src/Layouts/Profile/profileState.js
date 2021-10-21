@@ -8,6 +8,9 @@ export const initialState = {
   editMode: false,
   isOps: false,
   modalState: { show: false },
+  selectedPic: null,
+  userPic: null,
+  processOn: false,
 };
 
 export function profileReducer(state, action) {
@@ -21,7 +24,7 @@ export function profileReducer(state, action) {
       };
 
     case 'setinitialform':
-    //   console.log('User Info Payload: ', payload);
+      //   console.log('User Info Payload: ', payload);
       if (payload && Object.entries(payload).length) {
         return {
           ...state,
@@ -37,6 +40,34 @@ export function profileReducer(state, action) {
         editMode: payload,
       };
 
+    case 'editModeOff':
+      return {
+        ...state,
+        editMode: false,
+        selectedPic: null,
+        userPic: null,
+      };
+
+    case 'setProcessOn':
+      return {
+        ...state,
+        processOn: true,
+      };
+
+    case 'setProcessOff':
+      return {
+        ...state,
+        processOn: false,
+        editMode: false,
+      };
+
+    case 'selectPic':
+      return {
+        ...state,
+        selectedPic: payload,
+        userPic: URL.createObjectURL(payload),
+      };
+
     case 'updateModal':
       return {
         ...state,
@@ -47,6 +78,12 @@ export function profileReducer(state, action) {
       return {
         ...state,
         isOps: payload,
+      };
+
+    case 'setUserPic':
+      return {
+        ...state,
+        userPic: payload,
       };
 
     default:

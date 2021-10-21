@@ -1,22 +1,69 @@
 //Modules
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useShowError } from '../../../Custom Hooks/customHooks';
+import { errorTypes } from '../../../config';
 
 //Styles
 import style from './uploadModal.module.css';
+
+// Redux
+import { connect } from 'react-redux';
+import { getPutUrls } from '../../../Redux/Actions/httpActions';
+import { s3Upload } from '../../../Redux/Actions/appActions';
 
 // Components
 import { FiFolder, FiPlus, FiTrash, FiX } from 'react-icons/fi';
 import Modal from '../modal';
 import Button from '../../Buttons/SmallButton/smallButton';
 
-export default function UploadModal({ closeModal }) {
+function UploadModal(props) {
+  const { closeModal, putUrls, getPutUrls, isUploading, s3Upload, isCreated } =
+    props;
   const [fileList, setFileList] = useState([]);
   const [innerModalState, setInnerModalState] = useState({ show: false });
   const fileRef = useRef();
-  // console.log('FileList State: ', fileList);
+  console.log('FileList State: ', fileList);
   // console.log('FileList length: ', fileList.length);
+  const showError = useShowError();
 
-  function uploadPictures(evt) {}
+  useEffect(() => {
+    if (putUrls.length) {
+      console.log('Uploading Pictures...: ', putUrls);
+      if (putUrls.length === fileList.length) {
+        console.log('Array lengths match');
+
+        const uploadPics = fileList.map((file, index) => {
+          return { file, signedUrl: putUrls[index].signedUrl };
+        });
+
+        s3Upload({ pictures: uploadPics });
+      } else {
+        showError({
+          type: errorTypes.servererror,
+          message:
+            'UrlList length is not equal to FileList length. Contact Support',
+        });
+      }
+    }
+  }, [putUrls]);
+
+  useEffect(() => {
+    if (isCreated.value) {
+      console.log('Pictures were successfuly uploaded');
+      setInnerModalState({
+        show: true,
+        type: 'message',
+        message: 'Pictures were uploaded successfully',
+      });
+    }
+  }, [isCreated]);
+
+  function uploadPictures() {
+    if (fileList.length) {
+      console.log('Sending file list to server...');
+      getPutUrls({ data: { fileNames: fileList.map(file => file.name) } });
+    }
+  }
 
   function removeSelection(index) {
     const tempList = [...fileList];
@@ -162,3 +209,27 @@ export default function UploadModal({ closeModal }) {
     </section>
   );
 }
+
+function mapStateToProps(state) {
+  const { putUrls, isUploading } = state.app;
+  const { isCreated } = state.flags;
+
+  return { putUrls, isCreated, isUploading, isCreated };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    getPutUrls: fetchBody =>
+      dispatch(
+        getPutUrls({
+          method: 'POST',
+          fetchBody: fetchBody,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ),
+
+    s3Upload: fetchBody => dispatch(s3Upload(fetchBody)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UploadModal);

@@ -8,17 +8,17 @@ import {
   mongoDummyUsers,
   plainDummyUsers,
 } from '../../../Database/Dummy/dummyUsers.js';
+import { closeS3Client } from '../../../S3/awsModule.js';
 
 export async function insertToDB() {
-  // Insert dummy data into db (Create a util function for this for reusability in other tests)
   try {
     const db = await getDBInstance();
     const users = db.collection('users');
 
-    // console.log('Info to insert: ', mongoDummyUsers);
-    const result = await users.insertMany(mongoDummyUsers);
+    console.log('Info to insert: ', mongoDummyUsers[0]);
+    const result = await users.insertOne(mongoDummyUsers[0]);
 
-    // console.log('Insert Result: ', result);
+    console.log('Insert Result: ', result);
 
     const userInfo = await users.find({
       username: { $in: mongoDummyUsers.map(user => user.username) },
@@ -33,26 +33,39 @@ export async function insertToDB() {
       return info;
     });
   } catch (err) {
-    console.log('Error occured in beforeAll test handler: ', err);
+    console.log('Error occured in insertDB test handler: ', err);
   }
 }
 
-export async function cleanupDB() {
+export async function clearUsersCollection(db) {
   try {
     const db = await getDBInstance();
     const users = db.collection('users');
-    const sessionCol = db.collection('picskeepsession');
     const result = await users.deleteMany({});
-
-    const sessResult = await sessionCol.deleteMany({});
-
-    // console.log('User Delete Result: ', result);
-    // console.log('Session Delete Result: ', sessResult);
   } catch (err) {
-    console.log('Error occured in afterAll test handler: ', err);
+    console.log(
+      'Error occured in clearing users collection test handler: ',
+      err
+    );
+  }
+}
+
+export async function cleanupDB(cleanUsers) {
+  try {
+    const db = await getDBInstance();
+
+    if (cleanUsers) {
+      await clearUsersCollection();
+    }
+
+    const sessionCol = db.collection('picskeepsession');
+    const sessResult = await sessionCol.deleteMany({});
+  } catch (err) {
+    console.log('Error occured in clearing session collection handler: ', err);
   } finally {
     closeClientInstance();
     closeTransport();
+    closeS3Client();
     // console.log('After all we did');
   }
 }

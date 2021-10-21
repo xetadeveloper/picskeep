@@ -1,16 +1,13 @@
 const dummyData = {};
 
-const pictures = {
-  name: 'pictures',
+const profilePicSchema = {
+  name: 'preferences',
   dummyData,
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['picID', 'fileName', 's3Key'],
+      required: ['fileName, s3Key'],
       properties: {
-        picID: {
-          bsonType: 'string',
-        },
         fileName: {
           bsonType: 'string',
         },
@@ -22,4 +19,4 @@ const pictures = {
   },
 };
 
-export default pictures;
+export default profilePicSchema;

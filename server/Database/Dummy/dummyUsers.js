@@ -11,7 +11,10 @@ export const dummyUsers = [
     lastName: 'Powell',
     email: 'linda@gmail.com',
     storageUsed: 3000,
-    profilePicName: 'profile1.jpg',
+    profilePic: {
+      fileName: 'profile1.jpg',
+      s3Key: 'linda/profile/profile1.jpg',
+    },
   },
 ];
 
