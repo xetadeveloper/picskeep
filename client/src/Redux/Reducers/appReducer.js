@@ -2,7 +2,6 @@ import {
   SHOW_ERROR,
   UPDATE_APP_STATE,
   FETCH_STATUS,
-  UPLOAD_STATUS,
 } from '../ActionTypes/appActionTypes';
 import {
   GET_FAILED,
@@ -16,8 +15,8 @@ const initialState = {
   isLoggedIn: false,
   userInfo: {},
   isFetching: false,
-  isUploading: false,
   putUrls: [],
+  redirectToLogin: false,
 };
 
 export default function appReducer(state = initialState, action) {
@@ -34,8 +33,6 @@ export default function appReducer(state = initialState, action) {
       return { ...state, error: { ...payload } };
     case FETCH_STATUS:
       return { ...state, isFetching: payload };
-    case UPLOAD_STATUS:
-      return { ...state, isUploading: payload };
 
     default:
       return state;

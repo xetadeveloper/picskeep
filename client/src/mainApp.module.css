@@ -1,3 +1,24 @@
+.container {
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 425px) {
+  .container {
+    font-size: 0.8rem;
+  }
+}
+
+.altPage {
+  height: 80vh;
+  gap: 50px;
+  background-color: #f8a4a45b;
+  /* border: 1px solid black; */
+}
+
+.loaderIcon {
+  font-size: 2em;
+}
+
 .fabBtn {
   height: 50px;
   width: 50px;

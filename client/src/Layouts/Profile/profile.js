@@ -22,7 +22,11 @@ import {
   putImage,
   putPresignedUrl,
 } from '../../Utils/utils';
-import { useShowError } from '../../Custom Hooks/customHooks';
+import {
+  useFlags,
+  useResetFlags,
+  useShowError,
+} from '../../Custom Hooks/customHooks';
 import { FaSpinner } from 'react-icons/fa';
 import { errorTypes } from '../../config';
 
@@ -37,6 +41,8 @@ function Profile({ userInfo, deleteUser, updateUser }) {
   const { formData, editMode, modalState, selectedPic } = state;
   const { userPic, processOn } = state;
   const fileRef = useRef();
+  const resetFlags = useResetFlags();
+  const { isUpdated, isDeleted } = useFlags();
   // console.log('FormData: ', formData);
 
   // console.log('User Pic: ', userPic);
@@ -47,7 +53,22 @@ function Profile({ userInfo, deleteUser, updateUser }) {
     dispatch({ type: 'setinitialform', payload: userInfo });
   }, [userInfo]);
 
-  // How to tell the application when the update is finished?????
+  // Handles successful update
+  useEffect(() => {
+    if (isUpdated.value) {
+      console.log('Profile Update Successful');
+
+      // When update is finished
+      dispatch({ type: 'setProcessComplete' });
+    }
+  }, [isUpdated]);
+
+  // To reset flag state
+  useEffect(() => {
+    return () => {
+      resetFlags();
+    };
+  });
 
   // Renders the initial profile picture
   useEffect(() => {
@@ -86,19 +107,19 @@ function Profile({ userInfo, deleteUser, updateUser }) {
               `Unable to upload profile picture. Contact Support: ` +
               putRes.error,
           });
+          dispatch({ type: 'setProcessOff' });
         }
       } else {
         showError({
           type: errorTypes.uploaderror,
           message: `Unable to get signed URl. Contact Support: ` + info.error,
         });
+
+        dispatch({ type: 'setProcessOff' });
       }
     } else {
       updateDB();
     }
-
-    // When update is finished
-    // dispatch({ type: 'setProcessOff' });
   }
 
   function updateDB() {

@@ -7,6 +7,7 @@ export const GET_FAILED = 'GET_FAILED';
 // Other types
 export const RESTORE_SESSION = 'RESTORE_SESSION';
 export const PUT_URLS = 'PUT_URLS';
+export const GET_INFO = 'GET_INFO';
 
 // Picture
 export const DELETE_PIC = 'DELETE_PIC';

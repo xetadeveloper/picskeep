@@ -72,6 +72,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Static assets
 app.use(express.static(path.join(path.resolve(), 'client', 'build')));
+app.use(express.static(path.join(path.resolve(), 'server', 'HTML')));
 
 app.use('/', staticRoutes);
 

@@ -59,6 +59,7 @@
 .files {
   border: 1px solid #9c9c9c;
   flex-grow: 2;
+  position: relative;
 }
 
 .picBrowser {
@@ -67,6 +68,7 @@
   transition: all 0.5s ease-in-out;
   color: #b1b1b1;
   text-align: center;
+  /* border: 1px solid black; */
 }
 
 .picBrowser:hover {
@@ -88,6 +90,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+}
+
+.uploading {
+  background-color: #ffffff7c;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  gap: 30px;
+  /* border: 1px solid black; */
 }
 
 .fileItem {
@@ -189,3 +202,4 @@
 .btnIcon {
   font-size: 1.2em;
 }
+

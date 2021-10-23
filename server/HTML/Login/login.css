@@ -1,0 +1,153 @@
+.content {
+  height: 100vh;
+  width: 100%;
+  background-image: url('../Images/pic11.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff62;
+  color: white;
+  flex-wrap: wrap;
+}
+
+.logo-big {
+  font-size: 5em;
+  font-weight: 800;
+  color: #f72121;
+  text-shadow: 0 0 8px #490202f6;
+}
+
+.brand-text {
+  color: #333333;
+  font-weight: 800;
+}
+
+.banner {
+  flex-grow: 2;
+  /* border: 1px solid black; */
+}
+
+.form-holder {
+  min-width: 40%;
+  /* border: 1px solid black; */
+}
+
+@media screen and (max-width: 768px) {
+  .form-holder {
+    flex-grow: 2;
+  }
+}
+
+.login-form {
+  min-width: 80%;
+  background-color: #f72121;
+  border-radius: 8px;
+  box-shadow: 0 0 10px 8px #f7b1b1;
+  padding: 20px 1.25em;
+  gap: 20px;
+  /* border: 1px solid black; */
+}
+
+@media screen and (max-width: 425px) {
+  .login-form {
+    width: 90%;
+  }
+}
+
+.input-holder {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  justify-items: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 425px) {
+  .input-holder {
+    grid-template-columns: 80px 1fr;
+  }
+}
+
+.form-label {
+}
+
+.form-input {
+  font-family: inherit;
+  width: 100%;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.form-label,
+.form-input {
+  font-size: 0.9em;
+}
+
+.check-holder {
+  /* border: 1px solid black; */
+  gap: 10px;
+}
+
+.signup-link:hover,
+.check-label:hover {
+  color: #721818;
+  font-weight: 800;
+}
+
+.check-label,
+#save-session {
+  cursor: pointer;
+}
+
+.btn {
+  font-size: 1em;
+  background-color: white;
+  font-family: inherit;
+}
+
+.btn:hover {
+  background-color: #fa5b5b;
+  color: white;
+  border: 1px solid #dadada;
+}
+
+.btn-lg {
+  width: 100%;
+}
+
+.form-input,
+.btn-lg {
+  border-radius: 5px;
+  border: 1px solid grey;
+  height: 40px;
+}
+
+.invalid {
+  border: 3px solid #a30404;
+}
+
+.error {
+  text-align: center;
+  margin-top: 10px;
+  display: none;
+}
+
+.show-error {
+  display: block;
+}
+
+.signup-link {
+  cursor: pointer;
+}
+
+.sign-up {
+  display: none;
+}
+
+.display-element {
+  display: initial;
+}

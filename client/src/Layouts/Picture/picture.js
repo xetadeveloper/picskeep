@@ -4,7 +4,7 @@ import { FiDownload, FiLoader, FiSun, FiTrash } from 'react-icons/fi';
 
 // Redux
 import { connect } from 'react-redux';
-import { useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { dummyPictures } from '../../DummyData/dummy';
 
 // Styles
@@ -14,7 +14,11 @@ import style from './picture.module.css';
 import ScrollTop from '../../Components/ScrollTop/scrollTop';
 import Modal from '../../Components/Modals/modal';
 import { getImage, getPresignedUrl } from '../../Utils/utils';
-import { useShowError } from '../../Custom Hooks/customHooks';
+import {
+  useFlags,
+  useResetFlags,
+  useShowError,
+} from '../../Custom Hooks/customHooks';
 import { deletePicture, updatePicture } from '../../Redux/Actions/httpActions';
 
 function Picture({ pictures, deletePicture, updatePicture }) {
@@ -33,23 +37,42 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   const [txtFocus, setTxtFocus] = useState(false);
   const [picUrl, setPicUrl] = useState(null);
 
-  console.log('Picture: ', picUrl);
+  // console.log('Picture: ', picUrl);
   const showError = useShowError();
+  const { isDeleted } = useFlags();
+  const resetFlags = useResetFlags();
+  const history = useHistory();
 
   // For fetching the pic url from server
-  useEffect(async () => {
-    console.log('Fetching url from server');
-    const info = await getPresignedUrl('newfile.jpg');
+  useEffect(() => {
+    async function fetchUrl() {
+      console.log('Fetching url from server');
+      const info = await getPresignedUrl('newfile.jpg');
 
-    if (info.status === 200) {
-      setPicUrl(info.data.signedUrl);
-    } else {
-      showError({
-        type: 'inputerror',
-        message: 'Error in fetching signed url: ' + info.error,
-      });
+      if (info.status === 200) {
+        setPicUrl(info.data.signedUrl);
+      } else {
+        showError({
+          type: 'inputerror',
+          message: 'Error in fetching signed url: ' + info.error,
+        });
+      }
     }
+
+    fetchUrl();
   }, [setPicUrl]);
+
+  useEffect(() => {
+    if (isDeleted.value) {
+      history.push('/home');
+    }
+  }, [isDeleted]);
+
+  useEffect(() => {
+    return () => {
+      resetFlags();
+    };
+  });
 
   function handleInputChange(evt) {
     const inputVal = evt.target.value;

@@ -54,11 +54,19 @@ export function profileReducer(state, action) {
         processOn: true,
       };
 
-    case 'setProcessOff':
+    case 'setProcessComplete':
       return {
         ...state,
         processOn: false,
         editMode: false,
+        userPic: null,
+        selectedPic: null,
+      };
+
+    case 'setProcessOff':
+      return {
+        ...state,
+        processOn: false,
       };
 
     case 'selectPic':

@@ -9,7 +9,6 @@ import style from './pictureHolder.module.css';
 
 // Components
 import { NavLink } from 'react-router-dom';
-import { FiCircle } from 'react-icons/fi';
 import { FaSpinner } from 'react-icons/fa';
 
 function Picture({ picture }) {
@@ -42,8 +41,8 @@ function Picture({ picture }) {
   // For fetching the pic url from server
   useEffect(async () => {
     if (retrieveUrl) {
-      console.log('Fetching url from server');
-      const info = await getPresignedUrl('newfile.jpg');
+      // console.log('Fetching url from server');
+      const info = await getPresignedUrl(picture.s3Key);
 
       if (info.status === 200) {
         setPicUrl(info.data.signedUrl);

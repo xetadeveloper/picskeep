@@ -1,0 +1,41 @@
+.container {
+  gap: 20px;
+}
+
+.circleHolder {
+  /* border: 1px solid black; */
+  gap: 10px;
+}
+
+.circle {
+  color: #ec3a3a;
+  font-size: 0.8em;
+  animation-name: growShrink;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  /* border: 1px solid black; */
+}
+
+.firstCircle {
+  animation-delay: 0s;
+}
+
+.secondCircle {
+  animation-delay: 1s;
+}
+
+.thirdCircle {
+  animation-delay: 2s;
+}
+
+@keyframes growShrink {
+  0% {
+    font-size: 0em;
+  }
+
+  100% {
+    font-size: 0.8em;
+  }
+}

@@ -12,16 +12,14 @@ import {
  * @param {Next Middleware} next
  */
 export function isLoggedIn(req, res, next) {
-  // // console.log('Req Session UserID: ', req.session.userID);
-  // if (req.session.userID) {
-  //   // console.log('user is logged in');
-  req.session.username = 'linda'; //For test purposes
-  req.session.userID = '6170839a14356e57501268c3';
-  next();
-  // } else {
-  //   // console.log('user is not logged in');
-  //   res.status(401).json({ app: { isLoggedIn: false } });
-  // }
+  // console.log('Req Session UserID: ', req.session.userID);
+  if (req.session.userID) {
+    // console.log('user is logged in');
+    next();
+  } else {
+    // console.log('user is not logged in');
+    res.status(401).json({ app: { isLoggedIn: false } });
+  }
 }
 
 /** Checks if the route has data passed in
@@ -31,6 +29,8 @@ export function isLoggedIn(req, res, next) {
  */
 export function hasData(req, res, next) {
   const { data } = req.body;
+  // console.log('Reques body: ', req.body);
+  // console.log('Data: ', data);
 
   if (!data || !Object.entries(data).length) {
     emptyRequestBodyError(res);

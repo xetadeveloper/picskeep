@@ -1,6 +1,10 @@
 //Modules
 import React, { useEffect, useRef, useState } from 'react';
-import { useShowError } from '../../../Custom Hooks/customHooks';
+import {
+  useFlags,
+  useResetFlags,
+  useShowError,
+} from '../../../Custom Hooks/customHooks';
 import { errorTypes } from '../../../config';
 
 //Styles
@@ -12,19 +16,27 @@ import { getPutUrls } from '../../../Redux/Actions/httpActions';
 import { s3Upload } from '../../../Redux/Actions/appActions';
 
 // Components
-import { FiFolder, FiPlus, FiTrash, FiX } from 'react-icons/fi';
+import { FiFolder, FiLoader, FiPlus, FiTrash, FiX } from 'react-icons/fi';
 import Modal from '../modal';
-import Button from '../../Buttons/SmallButton/smallButton';
+import LoadingCircle from '../../LoadingCircle/loadingCircle';
 
 function UploadModal(props) {
-  const { closeModal, putUrls, getPutUrls, isUploading, s3Upload, isCreated } =
-    props;
+  const { closeModal, putUrls, getPutUrls, s3Upload } = props;
   const [fileList, setFileList] = useState([]);
   const [innerModalState, setInnerModalState] = useState({ show: false });
   const fileRef = useRef();
-  console.log('FileList State: ', fileList);
+  // console.log('FileList State: ', fileList);
   // console.log('FileList length: ', fileList.length);
   const showError = useShowError();
+  const resetFlags = useResetFlags();
+  const { isCreated, isUploading } = useFlags();
+
+  // To reset flag state
+  useEffect(() => {
+    return () => {
+      resetFlags();
+    };
+  });
 
   useEffect(() => {
     if (putUrls.length) {
@@ -38,11 +50,7 @@ function UploadModal(props) {
 
         s3Upload({ pictures: uploadPics });
       } else {
-        showError({
-          type: errorTypes.servererror,
-          message:
-            'UrlList length is not equal to FileList length. Contact Support',
-        });
+        displayErr('UrlList length is not equal to FileList length. Contact Support')
       }
     }
   }, [putUrls]);
@@ -50,6 +58,8 @@ function UploadModal(props) {
   useEffect(() => {
     if (isCreated.value) {
       console.log('Pictures were successfuly uploaded');
+
+      setFileList([]);
       setInnerModalState({
         show: true,
         type: 'message',
@@ -63,6 +73,19 @@ function UploadModal(props) {
       console.log('Sending file list to server...');
       getPutUrls({ data: { fileNames: fileList.map(file => file.name) } });
     }
+  }
+
+  function displayErr(message) {
+    setInnerModalState({
+      show: true,
+      type: 'message',
+      message: 'Upload Failed. Contact Support'
+    });
+
+    showError({
+      type: errorTypes.servererror,
+      message
+    });
   }
 
   function removeSelection(index) {
@@ -145,12 +168,14 @@ function UploadModal(props) {
           {fileList.length ? (
             <div className={`flex ${style.btnGroup}`}>
               <button
+                disable={isUploading}
                 onClick={openFileChooser}
                 className={`flex justify-center align-center dark-text ${style.btn}`}>
                 <h5 className={`${style.btnText}`}>Add More</h5>
                 <FiPlus className={`${style.btnIcon}`} />
               </button>
               <button
+                disable={isUploading}
                 onClick={() => {
                   setFileList([]);
                 }}
@@ -186,7 +211,15 @@ function UploadModal(props) {
             <FiFolder className={`${style.icon}`} />
           </section>
         ) : (
-          <section className={`${style.files}`}>{renderFiles()}</section>
+          <section className={`${style.files}`}>
+            {isUploading &&
+              <div
+                className={`flex flex-col justify-center align-center dark-text ${style.uploading}`}>
+                <LoadingCircle text='Uploading' />
+              </div>
+            }
+            {renderFiles()}
+          </section>
         )}
 
         <input
@@ -201,8 +234,13 @@ function UploadModal(props) {
         {fileList.length > 0 ? (
           <button
             className={`dark-text ${style.container} ${style.uploadBtn}`}
+            disable={isUploading}
             onClick={uploadPictures}>
-            <h5>Upload Pictures</h5>
+            {isUploading ? (
+              <FiLoader className={`iconRotate dark-text`} />
+            ) : (
+              <h5>Upload Pictures</h5>
+            )}
           </button>
         ) : null}
       </section>
@@ -211,10 +249,9 @@ function UploadModal(props) {
 }
 
 function mapStateToProps(state) {
-  const { putUrls, isUploading } = state.app;
-  const { isCreated } = state.flags;
+  const { putUrls } = state.app;
 
-  return { putUrls, isCreated, isUploading, isCreated };
+  return { putUrls };
 }
 
 function mapDispatchToProps(dispatch) {

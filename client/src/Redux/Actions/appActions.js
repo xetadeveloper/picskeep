@@ -3,19 +3,11 @@ import {
   S3_UPLOAD,
   SHOW_ERROR,
   UPDATE_APP_STATE,
-  UPLOAD_STATUS,
 } from '../ActionTypes/appActionTypes';
 
 export function setIsFetching(payload) {
   return {
     type: FETCH_STATUS,
-    payload,
-  };
-}
-
-export function setIsUploading(payload) {
-  return {
-    type: UPLOAD_STATUS,
     payload,
   };
 }

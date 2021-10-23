@@ -39,13 +39,14 @@ export default function httpMiddleware({ dispatch }) {
         fetch(url, fetchOptions)
           .then(response => response.json())
           .then(data => {
-            console.log('Fetch Result: ', data);
+            console.log('Fetch Result: ', data.app);
 
             switch (method) {
               case 'GET':
                 if (data.app && data.app.error) {
                   dispatch(getFailed(data.app));
                 } else {
+                  console.log('Dispatching successful resposne');
                   dispatch(getSuccessful(data.app));
                 }
                 break;

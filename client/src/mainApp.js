@@ -1,13 +1,13 @@
 // Modules
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { useSearchList } from './Custom Hooks/customHooks';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 // Styles
 import style from './mainApp.module.css';
 
 // Redux
 import { connect } from 'react-redux';
+import { getUserInfo, restoreSession } from './Redux/Actions/httpActions';
 
 // Components
 import { FiPlus } from 'react-icons/fi';
@@ -22,17 +22,41 @@ import Preferences from './Layouts/Preferences/preferences';
 import Settings from './Layouts/Settings/settings';
 import Modal from './Components/Modals/modal';
 import ScrollTop from './Components/ScrollTop/scrollTop';
+import DropModal from './Components/DropModal/dropModal';
+import LoadingCircle from './Components/LoadingCircle/loadingCircle';
+import Logout from './Layouts/Logout/logout';
 
 function MainApp(props) {
-  const [modalState, setModalState] = useState({ show: false });
+  const { error, isLoggedIn, restoreSession, redirectToLogin, getUserInfo } =
+    props;
 
-  // Redux Props
+  const [modalState, setModalState] = useState({ show: false });
+  const [dropModal, setDropModal] = useState(false);
+
+  console.log('Client logged in: ', isLoggedIn);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      console.log('Restoring session..');
+      restoreSession();
+    } else if (isLoggedIn) {
+      console.log('Getting user info');
+      getUserInfo();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (error) {
+      // console.log('Error: ', error)
+      setDropModal(true);
+    }
+  }, [error]);
 
   const navLinks = [
-    { path: '/home', text: 'Home' },
-    { path: '/dashboard', text: 'DashBoard' },
-    { path: '/preferences', text: 'Preferences' },
-    { path: '/logout', text: 'Logout' },
+    { path: '/app/home', text: 'Home' },
+    { path: '/app/dashboard', text: 'DashBoard' },
+    { path: '/app/preferences', text: 'Preferences' },
+    { path: '/app/logout', text: 'Logout' },
   ];
 
   return (
@@ -41,17 +65,37 @@ function MainApp(props) {
         <ScrollTop />
         <Modal modalState={modalState} setModalState={setModalState} />
         <TopNav links={navLinks} />
-        <Switch>
-          <Route path='/profile' component={Profile} />
-          <Route path='/preferences' component={Preferences} />
-          <Route path='/settings' component={Settings} />
-          <Route path='/folders' component={Folder} />
-          <Route path='/pictures' component={Picture} />
-          <Route path='/dashboard' component={Dashboard} />
-          <Route path='/home' component={Home} />
-          <Route component={NotFound} />
-        </Switch>
+        <DropModal
+          text={error ? error.message : ''}
+          show={dropModal}
+          setDropModal={setDropModal}
+        />
+
+        {isLoggedIn ? (
+          <Switch>
+            <Route path='/app/profile' component={Profile} />
+            <Route path='/app/logout' component={Logout} />
+            <Route path='/app/preferences' component={Preferences} />
+            <Route path='/app/settings' component={Settings} />
+            <Route path='/app/folders' component={Folder} />
+            <Route path='/app/pictures' component={Picture} />
+            <Route path='/app/dashboard' component={Dashboard} />
+            <Route path='/app/home' component={Home} />
+            <Redirect from='/' to='/home' />
+            <Route component={NotFound} />
+          </Switch>
+        ) : (
+          <section
+            className={`flex flex-col justify-center align-center ${style.altPage}`}>
+            {/* <h2>Logging In</h2>
+            <FiLoader className={`iconRotate dark-text ${style.loaderIcon}`} /> */}
+            <LoadingCircle text='Logging You In' />
+          </section>
+        )}
+
+        {redirectToLogin && <Redirect to='/login' />}
       </BrowserRouter>
+
       {/* Fab Button */}
       <div
         className={`flex justify-center align-center brand-bg light-text ${style.fabBtn}`}
@@ -68,13 +112,16 @@ function MainApp(props) {
 }
 
 function mapStateToProps(state) {
-  const {} = state.app;
+  const { error, isLoggedIn, redirectToLogin } = state.app;
 
-  return {};
+  return { error, isLoggedIn, redirectToLogin };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    restoreSession: () => dispatch(restoreSession()),
+    getUserInfo: () => dispatch(getUserInfo()),
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainApp);

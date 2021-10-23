@@ -42,19 +42,47 @@ router.get('/about', (req, res) => {
 });
 
 // login
+router.get('/login', async (req, res) => {
+  res
+    .status(200)
+    .sendFile(
+      path.join(path.resolve(), 'server', 'HTML', 'Login', '/login.html')
+    );
+});
+
 router.post('/login', hasData, async (req, res) => {
   try {
     const { data } = req.body;
 
-    // console.log('Logging user in: ', data);
+    console.log('Logging user in: ', data);
+
+    const hasMissing = [];
 
     const { username, password, saveSession } = data;
+
+    // Do server side validation
+    const missingMsg = 'Required field not filled';
+    if (!username || (username && !username.value)) {
+      hasMissing.push({ field: 'username', message: missingMsg });
+    }
+    if (!password || (password && !password.value)) {
+      hasMissing.push({ field: 'password', message: missingMsg });
+    }
+    if (!saveSession || (saveSession && !saveSession.value)) {
+      data.saveSession.value = false;
+    }
+
+    if (hasMissing.length) {
+      badInputError(res, hasMissing);
+      return;
+    }
+
     const db = await getDBInstance();
     const users = db.collection('users');
 
     try {
       const result = await users.findOne(
-        { username: username },
+        { username: username.value },
         { projection: { username: 1, password: 1, _id: 1 } }
       );
 
@@ -62,13 +90,14 @@ router.post('/login', hasData, async (req, res) => {
 
       if (result) {
         // Compare passwords
-        if (await bcrypt.compare(password, result.password)) {
+        if (await bcrypt.compare(password.value, result.password)) {
           // console.log('Password correct');
           // Create session
           req.session.username = result.username;
           req.session.userID = result._id;
-          if (!saveSession) {
+          if (!data.saveSession.value) {
             // Make session expire after browser/page close
+            // console.log('Setting cookie to session');
             req.session.cookie.expires = false;
           }
 
@@ -82,16 +111,17 @@ router.post('/login', hasData, async (req, res) => {
           console.log('Password not correct');
           badInputError(res, [
             {
-              field: 'password',
+              field: password.fieldId,
               message: `User password incorrect`,
             },
           ]);
         }
       } else {
+        console.log('user not found');
         badInputError(res, [
           {
-            field: 'username',
-            message: `User with username ${username} does not exist`,
+            field: username.fieldId,
+            message: `User with username ${username.value} does not exist`,
           },
         ]);
       }
@@ -106,6 +136,38 @@ router.post('/login', hasData, async (req, res) => {
 // Signup
 router.post('/signup', hasData, async (req, res) => {
   const { data } = req.body;
+
+  const hasMissing = [];
+
+  const { username, password, email, firstName, lastName, saveSession } = data;
+
+  console.log('Signing user up: ', data);
+
+  // Do server side validation
+  const missingMsg = 'Required field not filled';
+  if (!username || (username && !username.value)) {
+    hasMissing.push({ field: 'username', message: missingMsg });
+  }
+  if (!password || (password && !password.value)) {
+    hasMissing.push({ field: 'password', message: missingMsg });
+  }
+  if (!email || (email && !email.value)) {
+    hasMissing.push({ field: 'email', message: missingMsg });
+  }
+  if (!firstName || (firstName && !firstName.value)) {
+    hasMissing.push({ field: 'firstName', message: missingMsg });
+  }
+  if (!lastName || (lastName && !lastName.value)) {
+    hasMissing.push({ field: 'lastName', message: missingMsg });
+  }
+  if (!saveSession || (saveSession && !saveSession.value)) {
+    data.saveSession.value = false;
+  }
+
+  if (hasMissing.length) {
+    badInputError(res, hasMissing);
+    return;
+  }
 
   try {
     const db = await getDBInstance();
@@ -156,14 +218,42 @@ router.post('/signup', hasData, async (req, res) => {
         badInputError(res, errorFields);
       } else {
         // Hash password
-        const hashedUser = await new User(data).hashPassword();
-        hashedUser.preferences.saveSession = false;
+        const userData = {
+          username: username.value,
+          password: password.value,
+          firstName: firstName.value,
+          lastName: lastName.value,
+          email: email.value,
+        };
+
+        const hashedUser = await new User(userData).hashPassword();
+        hashedUser.preferences.saveSession = data.saveSession.value;
 
         const user = hashedUser.removeEmptyFields().convertToMongo();
         const { acknowledged } = await users.insertOne(user);
 
         if (acknowledged) {
-          res.status(201).end();
+          const result = await users.findOne(
+            { username: username.value },
+            { projection: { username: 1, password: 1, _id: 1 } }
+          );
+
+          if (result) {
+            req.session.username = result.username;
+            req.session.userID = result._id;
+            if (!data.saveSession.value) {
+              // Make session expire after browser/page close
+              req.session.cookie.expires = false;
+            }
+            res.status(201).end();
+          } else {
+            executionError(
+              res,
+              500,
+              errorTypes.inserterror,
+              'You may have been signed up but record cannot be found. Please try to login and if it fails,  contact support'
+            );
+          }
         } else {
           executionError(
             res,
@@ -179,6 +269,36 @@ router.post('/signup', hasData, async (req, res) => {
   } catch (err) {
     serverErrorFound(res, err, serverErrMsg);
   }
+});
+
+// For restoring session
+router.get('/restoreSession', async (req, res) => {
+  console.log('Restoring session');
+
+  // Check the session store if there's any session available
+  if (req.session.userID) {
+    res.status(200).json({
+      app: {
+        isLoggedIn: true,
+      },
+    });
+  } else {
+    console.log('Redirecting back to login...');
+    res.status(400).json({
+      app: { isLoggedIn: false, redirectToLogin: true },
+    });
+  }
+});
+
+// For logging user out
+router.get('/logout', async (req, res) => {
+  console.log('Logging out');
+
+  req.session.destroy();
+  req.session.cookie.maxAge(0);
+  res.status(200).json({
+    app: { redirectToLogin: true, isLoggedIn: false },
+  });
 });
 
 export default router;

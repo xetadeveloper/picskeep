@@ -1,11 +1,7 @@
 // Modules
 import { removeNull } from '../../Utils/utils';
-import { updateFlagState } from '../Actions/flagsActions';
-import {
-  setIsUploading,
-  showError,
-  updateAppState,
-} from '../Actions/appActions';
+import { setIsUploading, updateFlagState } from '../Actions/flagsActions';
+import { showError, updateAppState } from '../Actions/appActions';
 import FetchOptions from '../../Utils/FetchOptions';
 import { errorTypes } from '../../config';
 
@@ -25,12 +21,17 @@ export default function s3Middleware({ dispatch }) {
             const res = await putObject(picture, dispatch);
             return res;
           })
-        ).then(responses => {
-          console.log('Returned fetch responses: ', responses);
-          dispatch(updateAppState({ putUrls: [] }));
-          dispatch(setIsUploading(false));
-          dispatch(updateFlagState({ isCreated: { value: true } }));
-        });
+        )
+          .then(responses => {
+            console.log('Returned fetch responses: ', responses);
+            dispatch(updateAppState({ putUrls: [] }));
+            dispatch(setIsUploading(false));
+            dispatch(updateFlagState({ isCreated: { value: true } }));
+          })
+          .catch(err => {
+            dispatch(showError({ type: errorTypes.uploaderror, message: err }));
+            dispatch(setIsUploading(false));
+          });
       }
 
       next(action);

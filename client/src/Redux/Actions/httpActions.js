@@ -3,6 +3,7 @@ import {
   DELETE_ACCOUNT,
   DELETE_PIC,
   GET_FAILED,
+  GET_INFO,
   GET_SUCCESSFUL,
   GET_URL,
   POST_FAILED,
@@ -24,15 +25,17 @@ function addFetchOptions(payload, url) {
 }
 
 // Http Actions
-export function restoreSession(payload) {
-  if (payload) {
-    payload.url = '/api/restoreSession';
-    payload.httpMiddleware = true;
-  }
-
+export function restoreSession() {
   return {
     type: RESTORE_SESSION,
-    payload,
+    payload: { url: '/restoreSession', httpMiddleware: true, method: 'GET' },
+  };
+}
+
+export function getUserInfo() {
+  return {
+    type: GET_INFO,
+    payload: { url: '/api/getUserInfo', httpMiddleware: true, method: 'GET' },
   };
 }
 

@@ -5,17 +5,16 @@ Super High
 
 High
 * Configure database file to add many databases on config
+* Run tests for the routes again
 
 Medium
 * Create the function documentation for the mongodb.js functions
-* on login without save session checkbox ticked we set the req.session.cookie.expires to false to make sure the browser doesn't persist the session after page close (Check if this works)
-* Finish up preferences route
+* Finish up preferences route, when you add more functionality
 * Documnet is failing validation. Why???
-* Make nodemon only watch ceratin paths
+* finish the log out route
+
 
 Small
-* The script tag src is not working in static pages
-* uncomment is logged in middleware
 
 
 
@@ -24,11 +23,9 @@ Client
 Super High (>2hrs)
 
 High (~2 hrs)
-* Make App js do the restoring of session
-* Do the drop modal component thingy for errors
-* when uploading do a progress bar, and upload each file to aws synchronously and when it's done uploading take it off the list in the state of the uploadModal
 * Change the 'filename' variable to 's3Key'
-* find a way to notify components when their async processes have finished
+* Finish the logout route
+* Make the home page a sliding type
 
 Medium (~30 Mins -> 1hr)
 * Store a preferredTheme variable in local storage to know when to switch between dark and light themes
@@ -36,6 +33,7 @@ Medium (~30 Mins -> 1hr)
 * Fix the sessionRestored thingy
 * The App container should now call getUserInfo when an RUD operation occurs 
 * Implement a processOn state in components like profile componentthat does CRUD operations
+* FIx loading circle animation
 
 Small (~15 Mins)
 * Design a fine not found page
