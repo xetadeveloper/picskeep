@@ -1,0 +1,27 @@
+'use strict';
+
+// USe intersection observer to add fadeIn animation
+const observer = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.target.id === 'about') {
+        console.log('About page is intersecting');
+        entry.target.classList.add('fadeAnimation');
+      } else {
+        if (!entry.isIntersecting) {
+          entry.target.classList.remove('fadeAnimation');
+          console.log('About page is not intersecting');
+        }
+      }
+    });
+  },
+  {
+    rootMargin: '-150px',
+  }
+);
+
+window.onload = () => {
+  const aboutElem = document.querySelector('#about');
+  console.log('About elem: ', aboutElem);
+  observer.observe(aboutElem);
+};

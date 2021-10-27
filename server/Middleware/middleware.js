@@ -11,14 +11,30 @@ import {
  * @param {Response} res
  * @param {Next Middleware} next
  */
-export function isLoggedIn(req, res, next) {
+export function isLoggedInAPI(req, res, next) {
   // console.log('Req Session UserID: ', req.session.userID);
   if (req.session.userID) {
-    // console.log('user is logged in');
+    console.log('user is logged in');
     next();
   } else {
     // console.log('user is not logged in');
     res.status(401).json({ app: { isLoggedIn: false } });
+  }
+}
+
+/**Checks if user is logged in then redirects to login if not
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Next Middleware} next
+ */
+export function isLoggedInRedirect(req, res, next) {
+  // console.log('Req Session UserID: ', req.session.userID);
+  if (req.session.userID) {
+    console.log('user is logged in');
+    next();
+  } else {
+    // console.log('user is not logged in');
+    res.redirect('/login');
   }
 }
 

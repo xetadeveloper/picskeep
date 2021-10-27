@@ -1,6 +1,12 @@
 // Modules
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+} from 'react-router-dom';
 
 // Styles
 import style from './mainApp.module.css';
@@ -24,7 +30,6 @@ import Modal from './Components/Modals/modal';
 import ScrollTop from './Components/ScrollTop/scrollTop';
 import DropModal from './Components/DropModal/dropModal';
 import LoadingCircle from './Components/LoadingCircle/loadingCircle';
-import Logout from './Layouts/Logout/logout';
 
 function MainApp(props) {
   const { error, isLoggedIn, restoreSession, redirectToLogin, getUserInfo } =
@@ -33,14 +38,14 @@ function MainApp(props) {
   const [modalState, setModalState] = useState({ show: false });
   const [dropModal, setDropModal] = useState(false);
 
-  console.log('Client logged in: ', isLoggedIn);
+  // console.log('Client logged in: ', isLoggedIn);
 
   useEffect(() => {
     if (!isLoggedIn) {
-      console.log('Restoring session..');
+      // console.log('Restoring session..');
       restoreSession();
     } else if (isLoggedIn) {
-      console.log('Getting user info');
+      // console.log('Getting user info');
       getUserInfo();
     }
   }, [isLoggedIn]);
@@ -52,16 +57,24 @@ function MainApp(props) {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (redirectToLogin) {
+      // location.href = 'http://localhost:5000/login';
+      window.location.href = '/login';
+    }
+  }, [redirectToLogin]);
+
   const navLinks = [
-    { path: '/app/home', text: 'Home' },
-    { path: '/app/dashboard', text: 'DashBoard' },
-    { path: '/app/preferences', text: 'Preferences' },
-    { path: '/app/logout', text: 'Logout' },
+    { path: '/', text: 'Home' },
+    { path: '/dashboard', text: 'DashBoard' },
+    { path: '/preferences', text: 'Preferences' },
+    { path: '/logout', text: 'Logout' },
   ];
 
   return (
     <div className={`${style.container}`}>
-      <BrowserRouter>
+      {/* Add baseName to router */}
+      <BrowserRouter basename='/app'>
         <ScrollTop />
         <Modal modalState={modalState} setModalState={setModalState} />
         <TopNav links={navLinks} />
@@ -71,17 +84,22 @@ function MainApp(props) {
           setDropModal={setDropModal}
         />
 
-        {isLoggedIn ? (
+        {true ? (
           <Switch>
-            <Route path='/app/profile' component={Profile} />
-            <Route path='/app/logout' component={Logout} />
-            <Route path='/app/preferences' component={Preferences} />
-            <Route path='/app/settings' component={Settings} />
-            <Route path='/app/folders' component={Folder} />
-            <Route path='/app/pictures' component={Picture} />
-            <Route path='/app/dashboard' component={Dashboard} />
-            <Route path='/app/home' component={Home} />
-            <Redirect from='/' to='/home' />
+            <Route path='/profile' component={Profile} />
+            <Route path='/preferences' component={Preferences} />
+            <Route path='/settings' component={Settings} />
+            <Route path='/folders' component={Folder} />
+            <Route path='/pictures' component={Picture} />
+            <Route path='/dashboard' component={Dashboard} />
+            <Route
+              path='/logout'
+              render={() => {
+                // window.location.href = 'http://localhost:5000/logout';
+                window.location.href = '/logout';
+              }}
+            />
+            <Route path='/' component={Home} />
             <Route component={NotFound} />
           </Switch>
         ) : (
@@ -92,8 +110,6 @@ function MainApp(props) {
             <LoadingCircle text='Logging You In' />
           </section>
         )}
-
-        {redirectToLogin && <Redirect to='/login' />}
       </BrowserRouter>
 
       {/* Fab Button */}

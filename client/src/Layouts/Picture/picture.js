@@ -13,27 +13,31 @@ import style from './picture.module.css';
 // Components
 import ScrollTop from '../../Components/ScrollTop/scrollTop';
 import Modal from '../../Components/Modals/modal';
-import { getImage, getPresignedUrl } from '../../Utils/utils';
+import { getPresignedUrl } from '../../Utils/utils';
 import {
   useFlags,
   useResetFlags,
   useShowError,
 } from '../../Custom Hooks/customHooks';
 import { deletePicture, updatePicture } from '../../Redux/Actions/httpActions';
+import { appMode } from '../../config';
 
 function Picture({ pictures, deletePicture, updatePicture }) {
   const pictureID = new URLSearchParams(useLocation().search).get('pictureID');
   const [modalState, setModalState] = useState({ show: false });
 
-  //   const picture =
-  //     pictures && pictures.find(picture => picture.picID === pictureID);
+  let picture;
 
-  const picture =
-    dummyPictures &&
-    dummyPictures.find(picture => picture.fileID === pictureID);
+  if (appMode === 'dummy') {
+    picture =
+      dummyPictures &&
+      dummyPictures.find(picture => picture.picID === pictureID);
+  } else {
+    picture = pictures && pictures.find(picture => picture.picID === pictureID);
+  }
 
   // States
-  const [picName, setPicName] = useState(picture ? picture.name : '');
+  const [picName, setPicName] = useState(picture ? picture.fileName : '');
   const [txtFocus, setTxtFocus] = useState(false);
   const [picUrl, setPicUrl] = useState(null);
 
@@ -47,7 +51,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   useEffect(() => {
     async function fetchUrl() {
       console.log('Fetching url from server');
-      const info = await getPresignedUrl('newfile.jpg');
+      const info = await getPresignedUrl(picture.s3Key);
 
       if (info.status === 200) {
         setPicUrl(info.data.signedUrl);
@@ -64,7 +68,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
 
   useEffect(() => {
     if (isDeleted.value) {
-      history.push('/home');
+      history.push('/');
     }
   }, [isDeleted]);
 
@@ -72,7 +76,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
     return () => {
       resetFlags();
     };
-  });
+  }, []);
 
   function handleInputChange(evt) {
     const inputVal = evt.target.value;
@@ -95,7 +99,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
 
   // Downloads the picture
   async function downloadPic() {
-    const info = await getPresignedUrl('newfile.jpg');
+    const info = await getPresignedUrl(picture.s3Key);
 
     if (info.status === 200) {
       const link = document.createElement('a');
@@ -179,7 +183,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
       </section>
 
       {/* Show picture details here */}
-      <section>Show Picture Details here</section>
+      <section className={`flex justify-center`}>Picture Details </section>
     </section>
   );
 }

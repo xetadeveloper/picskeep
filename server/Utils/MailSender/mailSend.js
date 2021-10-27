@@ -13,8 +13,8 @@ function getTransportObject() {
       port: 465,
       host: 'smtp.gmail.com',
       auth: {
-        user: process.env.journalMeEmail,
-        pass: process.env.journalMeEmailPass,
+        user: process.env.picsKeepEmail,
+        pass: process.env.picsKeepPass,
       },
     };
     globalTransport = nodemailer.createTransport(transportOptions);
@@ -27,9 +27,9 @@ export function sendEmail(userMail) {
   return new Promise((resolve, reject) => {
     // Sends the email
     const mailData = {
-      from: '"JournalMe Contact Us" xetaglobal@gmail.com',
+      from: '"PicsKeep Contact Us" xetaglobal@gmail.com',
       to: 'xetaglobal@gmail.com',
-      subject: 'JournalMe Contact Us Message',
+      subject: 'PicsKeep Contact Us Message',
       html: `
             <h2>User Email: ${userMail.email}</h2>
             <h2>Message:</h2>

@@ -1,6 +1,6 @@
 // Modules
 import React from 'react';
-import { NavLink, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Styles
 import style from './notFound.module.css';

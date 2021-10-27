@@ -6,13 +6,10 @@ Super High
 High
 * Configure database file to add many databases on config
 * Run tests for the routes again
+* confirm if heroku postbuild rename works
 
 Medium
 * Create the function documentation for the mongodb.js functions
-* Finish up preferences route, when you add more functionality
-* Documnet is failing validation. Why???
-* finish the log out route
-
 
 Small
 
@@ -23,19 +20,10 @@ Client
 Super High (>2hrs)
 
 High (~2 hrs)
-* Change the 'filename' variable to 's3Key'
-* Finish the logout route
-* Make the home page a sliding type
 
 Medium (~30 Mins -> 1hr)
-* Store a preferredTheme variable in local storage to know when to switch between dark and light themes
-* Make a type that can do the spining icon thing when operation is going on
-* Fix the sessionRestored thingy
-* The App container should now call getUserInfo when an RUD operation occurs 
-* Implement a processOn state in components like profile componentthat does CRUD operations
-* FIx loading circle animation
+* Add a processOn state in components like profile components that does CRUD operations
+* FIx loading circle dots animation
 
 Small (~15 Mins)
-* Design a fine not found page
-* 
-* In he home page, make the 'Your folders" part to be clickable, not just the arrow drop down
+* Design a finer not found page

@@ -1,6 +1,5 @@
 // Modules
-import React, { useCallback, useMemo, useState } from 'react';
-import withPictureSearch from '../../HOC/withPictureSearch';
+import React, { useState } from 'react';
 
 // Styles
 import style from './topNav.module.css';
@@ -36,35 +35,45 @@ export default function TopNav({ links }) {
     });
   }
 
-  function renderFilteredPics(filteredResults) {
-    return filteredResults.map((file, index) => {
-      return file.type === 'picture' ? (
-        <li key={index} className={style.filteredItem}>
-          <NavLink to={`/picture?pictureID=${file.fileID}`}>
-            {file.name}
+  function renderFilteredPics(filteredItems) {
+    return filteredItems.map((item, index) => {
+      return item.type === 'picture' ? (
+        <li
+          key={index}
+          className={style.filteredItem}
+          onClick={() => {
+            setFiltered([]);
+          }}>
+          <NavLink to={`/pictures?pictureID=${item.picID}`}>
+            {item.fileName}
           </NavLink>
         </li>
       ) : null;
     });
   }
 
-  function renderFilteredFolders(filteredResults) {
-    return filteredResults.map((file, index) => {
-      return file.type === 'folder' ? (
-        <li key={index} className={style.filteredItem}>
-          <NavLink to={`/folder?folderID=${file.fileID}`}>{file.name}</NavLink>
+  function renderFilteredFolders(filteredItems) {
+    return filteredItems.map((item, index) => {
+      return item.type === 'folder' ? (
+        <li
+          key={index}
+          className={style.filteredItem}
+          onClick={() => {
+            setFiltered([]);
+          }}>
+          <NavLink to={`/folders?folderID=${item.folderID}`}>
+            {item.fileName}
+          </NavLink>
         </li>
       ) : null;
     });
   }
 
   function filterFunc(file, searchTxt) {
-    return searchTxt.trim() ? file.name.startsWith(searchTxt) : false;
+    return searchTxt.trim() ? file.fileName.startsWith(searchTxt) : false;
   }
 
   function setSearchResult(result) {
-    // console.log('Search Result: ', result);
-
     setFiltered(result);
   }
 
@@ -75,7 +84,9 @@ export default function TopNav({ links }) {
       <div
         className={`flex flex-col justify-center align-center ${style.searchComp}`}>
         {/* Search Bar Holder */}
-        <div className={`dark-text ${style.searchHolder}`}>
+        <div
+          className={`dark-text ${style.searchHolder}`}
+          data-search='searchItem'>
           <SearchBar
             searchList={searchList}
             filterFunc={filterFunc}
@@ -85,9 +96,8 @@ export default function TopNav({ links }) {
 
         {/* Search Result List Holder */}
         <ul
-          className={` ${style.searchResult} ${
-            !filtered.length && style.show
-          }`}>
+          className={` ${style.searchResult} ${!filtered.length && style.show}`}
+          data-search='searchItem'>
           <li className={`${style.filterSection}`}>
             <h6 className={`${style.filterHeader}`}>Folders</h6>
             {filtered.length ? renderFilteredFolders(filtered) : null}

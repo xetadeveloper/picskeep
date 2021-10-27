@@ -1,4 +1,4 @@
-export const appMode = 'dummy';
+export const appMode = 'prod';
 
 export const errorTypes = {
   servererror: 'servererror',

@@ -11,15 +11,17 @@ import {
 import { hasData } from '../Middleware/middleware.js';
 import User from '../Database/Models/userModel.js';
 import { dbOpErrorMsg, errorTypes, serverErrMsg } from '../config.js';
+import { sendEmail } from '../Utils/MailSender/mailSend.js';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true, strict: true });
 
 // Home page
 router.get('/', (req, res) => {
+  console.log('Sending hompage');
   res
     .status(200)
     .sendFile(
-      path.join(path.resolve(), 'server', 'HTML', 'Home', '/home.html')
+      path.join(path.resolve(), 'server', 'Public', 'html', 'index.html')
     );
 });
 
@@ -28,8 +30,31 @@ router.get('/contact', (req, res) => {
   res
     .status(200)
     .sendFile(
-      path.join(path.resolve(), 'server', 'HTML', 'Contact', '/contact.html')
+      path.join(path.resolve(), 'server', 'Public', 'html', 'contact.html')
     );
+});
+
+// For sending contact us mails
+router.post('/contact', hasData, async (req, res) => {
+  const { data } = req.body;
+  sendEmail(data)
+    .then(info => {
+      // console.log('We successfully sent the mail: ', info);
+      res.status(200).json({
+        app: {
+          emailSent: true,
+        },
+      });
+    })
+    .catch(err => {
+      // console.log('Error in email send route: ', err);
+      executionError(
+        res,
+        500,
+        errorTypes.servererror,
+        `Mail Was Not Sent: ${err}`
+      );
+    });
 });
 
 // About Page
@@ -37,24 +62,31 @@ router.get('/about', (req, res) => {
   res
     .status(200)
     .sendFile(
-      path.join(path.resolve(), 'server', 'HTML', 'About', '/about.html')
+      path.join(path.resolve(), 'server', 'Public', 'html', 'about.html')
     );
 });
 
 // login
 router.get('/login', async (req, res) => {
-  res
-    .status(200)
-    .sendFile(
-      path.join(path.resolve(), 'server', 'HTML', 'Login', '/login.html')
-    );
+  // Check the session store if there's any session available
+  console.log('Serving login html from staticRoutes');
+  if (req.session.userID) {
+    res.redirect('/app/home');
+  } else {
+    res
+      .status(200)
+      .sendFile(
+        path.join(path.resolve(), 'server', 'Public', 'html', 'login.html')
+      );
+  }
 });
 
+// API routes
 router.post('/login', hasData, async (req, res) => {
   try {
     const { data } = req.body;
 
-    console.log('Logging user in: ', data);
+    // console.log('Logging user in: ', data);
 
     const hasMissing = [];
 
@@ -69,7 +101,7 @@ router.post('/login', hasData, async (req, res) => {
       hasMissing.push({ field: 'password', message: missingMsg });
     }
     if (!saveSession || (saveSession && !saveSession.value)) {
-      data.saveSession.value = false;
+      data.saveSession = { value: false };
     }
 
     if (hasMissing.length) {
@@ -161,7 +193,7 @@ router.post('/signup', hasData, async (req, res) => {
     hasMissing.push({ field: 'lastName', message: missingMsg });
   }
   if (!saveSession || (saveSession && !saveSession.value)) {
-    data.saveSession.value = false;
+    data.saveSession = { value: false };
   }
 
   if (hasMissing.length) {
@@ -280,6 +312,7 @@ router.get('/restoreSession', async (req, res) => {
     res.status(200).json({
       app: {
         isLoggedIn: true,
+        redirectToLogin: false,
       },
     });
   } else {
@@ -292,10 +325,19 @@ router.get('/restoreSession', async (req, res) => {
 
 // For logging user out
 router.get('/logout', async (req, res) => {
+  res
+    .status(200)
+    .sendFile(
+      path.join(path.resolve(), 'server', 'Public', 'html', '/logout.html')
+    );
+});
+
+router.post('/logout', async (req, res) => {
   console.log('Logging out');
 
+  // console.log('req session: ', req.session);
+  req.session.cookie.maxAge = 0;
   req.session.destroy();
-  req.session.cookie.maxAge(0);
   res.status(200).json({
     app: { redirectToLogin: true, isLoggedIn: false },
   });

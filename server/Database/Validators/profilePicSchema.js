@@ -6,7 +6,6 @@ const profilePicSchema = {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['fileName, s3Key'],
       properties: {
         fileName: {
           bsonType: 'string',

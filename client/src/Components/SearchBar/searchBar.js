@@ -36,7 +36,6 @@ export default function SearchBar(props) {
         value={searchText}
         onBlur={() => {
           setSearchText('');
-          setFound([]);
         }}
       />
       {searchText && searchText.trim() ? (

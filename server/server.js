@@ -7,16 +7,20 @@ import session from 'express-session';
 import mongoDBSession from 'connect-mongodb-session';
 import { serverErrorFound } from './Utils/errorHandling.js';
 import { v4 as genUUID } from 'uuid';
-import { isLoggedIn } from './Middleware/middleware.js';
+import { isLoggedInAPI, isLoggedInRedirect } from './Middleware/middleware.js';
 import cleanupServer from './Utils/cleanup.js';
 import { getS3Client, testAWSCommands } from './S3/awsModule.js';
 
 // Routers
 import staticRoutes from './Routes/staticRoutes.js';
 import apiRoutes from './Routes/apiRoutes.js';
-import { insertToDB } from './Routes/tests/Test Handlers/testHandlers.js';
 
 export const app = express();
+app.disable('x-powered-by');
+app.enable('strict routing');
+
+console.log('Strict routing enabled: ', app.enabled('strict routing'));
+
 const productionMode = process.env.NODE_ENV === 'production';
 const testMode = process.env.NODE_ENV === 'test';
 
@@ -29,11 +33,9 @@ const dbUrl = productionMode
 // Start up the database instance and s3 client
 if (!testMode) {
   await getDBInstance();
-  // await insertToDB()
 }
 
 await getS3Client(false);
-// await testAWSCommands();
 
 // Mongodb session store config
 const MongoDBStore = mongoDBSession(session);
@@ -71,23 +73,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static assets
-app.use(express.static(path.join(path.resolve(), 'client', 'build')));
-app.use(express.static(path.join(path.resolve(), 'server', 'HTML')));
+app.use(
+  express.static(path.join(path.resolve(), 'server', 'Public'), {
+    // fallthrough: false,
+    redirect: false,
+    dotfiles: 'ignore',
+  })
+);
 
+app.use(express.static(path.join(path.resolve(), 'client', 'build')));
+
+// Routes
 app.use('/', staticRoutes);
 
-app.use('/api', isLoggedIn, apiRoutes);
+// REST API
+app.use('/api', isLoggedInAPI, apiRoutes);
 
 // Serve react app here
-if (productionMode) {
-  app.get('/app/*', (req, res) => {
-    res.sendFile(path.join(path.resolve(), 'client', 'build', 'index.html'));
-  });
-}
+// if (productionMode) {
+app.get(['/app', '/app/*'], isLoggedInRedirect, (req, res) => {
+  console.log('Request for react app');
+  res.sendFile(path.join(path.resolve(), 'client', 'build', 'app.html'));
+});
+// }
 
 // Handle all app errors
 app.use((err, req, res, next) => {
-  console.log('ServerErrorFound: An error was thrown');
+  console.log('Catch All: ServerErrorFound: An error was thrown');
   serverErrorFound(res, err, `An error occured on the server: ${err.stack}`);
 });
 

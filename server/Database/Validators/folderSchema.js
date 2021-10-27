@@ -6,7 +6,6 @@ const folders = {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['folderID', 'folderName'],
       properties: {
         folderID: {
           bsonType: 'string',

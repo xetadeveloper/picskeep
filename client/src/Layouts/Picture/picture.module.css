@@ -29,6 +29,7 @@
   word-break: break-all;
   width: 100%;
   max-width: 500px;
+  font-family: inherit;
   border: none;
 }
 

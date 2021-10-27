@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/logout.css" />
+    <script type="text/javascript" src="../js/logout.js"></script>
+    <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="../favicon/apple-touch-icon.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="../favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="../favicon/favicon-16x16.png"
+  />
+  <link rel="manifest" href="../favicon/site.webmanifest" />
+    <title>Logout</title>
+  </head>
+  <body>
+    <section class="content">
+      <!-- Overlay for text eligibility -->
+      <section class="flex justify-center align-center overlay">
+        <!-- Banner Section -->
+        <section class="flex flex-col justify-center align-center banner">
+          <h1 class="logo logo-big">PicsKeep</h1>
+          <h4 class="brand-text">Just Take A Picture</h4>
+        </section>
+
+        <!-- Form Section -->
+        <section class="flex justify-center align-center form-holder">
+          <section class="flex flex-col justify-center align-center login-form">
+            <!-- <h5>Leaving so soon?</h5> -->
+            <h5>We'll miss you 😢</h5>
+            <!-- Logout Button -->
+            <button
+              class="btn btn-lg dark-text"
+              type="button"
+              onclick="logout()"
+            >
+              Logout
+            </button>
+            <h6 class="back-home" onclick="goBack()">Let's go back to home?</h6>
+          </section>
+        </section>
+      </section>
+    </section>
+  </body>
+</html>

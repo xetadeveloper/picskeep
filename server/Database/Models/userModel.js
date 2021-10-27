@@ -11,7 +11,7 @@ export default class User {
     this.lastName = '';
     this.email = '';
     this.storageUsed = 0;
-    this.profilePic = {}
+    this.profilePic = {};
     this.pictures = [];
     this.preferences = {};
 
@@ -63,3 +63,4 @@ export default class User {
     return mongoTypes;
   }
 }
+

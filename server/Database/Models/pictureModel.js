@@ -5,6 +5,7 @@ export default class Picture {
     this.picID = '';
     this.fileName = '';
     this.s3Key = '';
+    this.type = 'picture';
 
     if (picture) {
       Object.assign(this, picture);

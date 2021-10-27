@@ -6,7 +6,6 @@ const preferencesSchema = {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['saveSession'],
       properties: {
         saveSession: { 
           bsonType: 'bool',

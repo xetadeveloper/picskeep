@@ -25,7 +25,7 @@ export function dbOperationError(res, err, errMessage) {
 }
 
 export function executionError(res, status, errType, errMessage) {
-  console.log('Error occured in an operation\n');
+  console.log(`Error occured in an operation\n Error Message: ${errMessage}`);
   res.status(status).json({
     app: {
       error: {

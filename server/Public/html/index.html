@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <script src="../js/global.js"></script>
+    <script src="../js/index.js"></script>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../favicon/site.webmanifest" />
+    <title>PicsKeep</title>
+  </head>
+  <body>
+    <div class="flex body-holder container">
+      <!-- Home Page -->
+      <section class="page" id="home">
+        <div class="flex flex-col overlay">
+          <!-- Navbar -->
+          <nav class="flex justify-center nav-container">
+            <ul class="flex navigation">
+              <li class="nav-item active-link"><a href="#home">Home</a></li>
+              <li class="nav-item"><a href="#about">About Us</a></li>
+              <li class="nav-item"><a href="#contact">Contact Us</a></li>
+              <li class="nav-item"><a href="/login">Login</a></li>
+            </ul>
+          </nav>
+          <!-- Control buttons -->
+          <a href="#about" class="next-btn">➤</a>
+
+          <!-- Body -->
+          <section class="flex flex-col justify-center align-center page-item">
+            <h1 class="logo logo-big">PicsKeep</h1>
+            <h4 class="logo-text">Take Pictures, We Secure It</h4>
+            <div class="flex flex-col justify-center align-center btn-group">
+              <button class="btn btn-lg" onclick="handleTour()">Tour</button>
+              <a href="/login" class="btn btn-lg">Join Us</a>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- About Us -->
+      <!-- Add the fadeIn animation with JS -->
+      <section class="page" id="about">
+        <div class="flex flex-col overlay">
+          <!-- Navbar -->
+          <nav class="flex justify-center nav-container">
+            <ul class="flex navigation">
+              <li class="nav-item"><a href="#home">Home</a></li>
+              <li class="nav-item"><a href="#about">About Us</a></li>
+              <li class="nav-item"><a href="#contact">Contact Us</a></li>
+              <li class="nav-item"><a href="/login">Login</a></li>
+            </ul>
+          </nav>
+          <!-- Control buttons -->
+          <a href="#home" class="back-btn">➤</a>
+          <a href="#contact" class="next-btn">➤</a>
+
+          <!-- Body -->
+          <section class="flex flex-col align-center page-item">
+            <h1 class="header-text">About PicsKeep</h1>
+            <h5>We store and keep your pictures secured</h5>
+
+            <section class="flex flex-col align-center features">
+              <!-- Device responsive -->
+              <section class="feature-item">
+                <h3 class="feature-header">Responsiveness</h3>
+                <h5 class="feature-text">
+                  View your pictures on any device with a browser
+                </h5>
+              </section>
+
+              <div class="divider"></div>
+
+              <!-- Secure Storage with S3 -->
+              <section class="feature-item">
+                <h3 class="feature-header">Secure</h3>
+                <h5 class="feature-text">
+                  Your pictures are stored in a secure storage using Amazon S3
+                </h5>
+              </section>
+
+              <div class="divider"></div>
+
+              <!-- Download to any device (or not???) -->
+              <section class="feature-item">
+                <h3 class="feature-header">Download</h3>
+                <h5 class="feature-text">
+                  Download and view your pictures from anywhere
+                </h5>
+              </section>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <!-- Contact Us -->
+      <section class="page" id="contact">
+        <div class="overlay">
+          <!-- Navbar -->
+          <nav class="flex justify-center nav-container">
+            <ul class="flex navigation">
+              <li class="nav-item"><a href="#home">Home</a></li>
+              <li class="nav-item"><a href="#about">About Us</a></li>
+              <li class="nav-item"><a href="#contact">Contact Us</a></li>
+              <li class="nav-item"><a href="/login">Login</a></li>
+            </ul>
+          </nav>
+
+          <!-- Control buttons -->
+          <a href="#about" class="back-btn">➤</a>
+
+          <!-- Body -->
+          <section class="flex flex-col justify-center align-center page-item">
+            <section>
+              <h1 class="header-text">Reach Out To Us</h1>
+              <h4 class="logo-text">We'll Love To Hear From You</h4>
+            </section>
+
+            <!-- Contact form -->
+            <form
+              class="flex flex-col login-form"
+              onsubmit="handleContact(event)"
+            >
+              <!-- Email -->
+              <div class="sign-up">
+                <div class="input-holder">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="text"
+                    id="email"
+                    placeholder="Email"
+                    class="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Message -->
+              <div class="sign-up">
+                <div class="input-holder">
+                  <label for="message" class="form-label">Message</label>
+                  <textarea
+                    type="text"
+                    id="message"
+                    placeholder="Your message for us"
+                    class="form-input"
+                    required
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button class="btn btn-lg" type="submit">
+                <h4>Submit</h4>
+              </button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

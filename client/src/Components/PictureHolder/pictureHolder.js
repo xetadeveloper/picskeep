@@ -59,7 +59,7 @@ function Picture({ picture }) {
   return (
     <NavLink
       ref={pictureRef}
-      to={`/pictures?pictureID=${picture.fileID}`}
+      to={`/pictures?pictureID=${picture.picID}`}
       className={`flex flex-col align-center justify-between dark-text ${style.pictureItem}`}>
       {!picUrl ? (
         <div className={`flex align-center justify-center ${style.picImg}`}>
@@ -68,7 +68,7 @@ function Picture({ picture }) {
       ) : (
         <img src={picUrl} className={`${style.picImg}`} alt='' />
       )}
-      <h5>{picture.name}</h5>
+      <h5>{picture.fileName}</h5>
     </NavLink>
   );
 }

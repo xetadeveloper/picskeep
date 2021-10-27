@@ -1,5 +1,5 @@
 // Modules
-import React, { useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import { profileReducer, initialState } from './profileState';
 import { connect } from 'react-redux';
 
@@ -11,7 +11,7 @@ import style from './profile.module.css';
 
 // Components
 import PagePrompt from '../../Components/PagePrompt/pagePrompt';
-import { FiCamera, FiLoader, FiSettings, FiTrash } from 'react-icons/fi';
+import { FiCamera, FiLoader } from 'react-icons/fi';
 import Modal from '../../Components/Modals/modal';
 import defaultUserPic from '../../Images/user icon.png';
 import ScrollTop from '../../Components/ScrollTop/scrollTop';
@@ -35,7 +35,6 @@ function Profile({ userInfo, deleteUser, updateUser }) {
 
   const { profilePic } = userInfo || {};
 
-  // const demoProfilePic = { fileName: 'newfile.jpg', s3Key: 'newfile.jpg' };
   const showError = useShowError();
 
   const { formData, editMode, modalState, selectedPic } = state;
@@ -63,12 +62,12 @@ function Profile({ userInfo, deleteUser, updateUser }) {
     }
   }, [isUpdated]);
 
-  // To reset flag state
+  // To reset flag state on component unmount
   useEffect(() => {
     return () => {
       resetFlags();
     };
-  });
+  }, []);
 
   // Renders the initial profile picture
   useEffect(() => {
@@ -199,8 +198,7 @@ function Profile({ userInfo, deleteUser, updateUser }) {
     } else if (profilePic && profilePic.fileName) {
       console.log('Gettinf profile pic form s3');
       // get picture from s3 and return
-      // const info = await getPresignedUrl(profilePic.s3Key);
-      const info = await getPresignedUrl('newfile.jpg');
+      const info = await getPresignedUrl(profilePic.s3Key);
 
       if (info && info.status === 200) {
         const response = await getImage(info.data.signedUrl);
