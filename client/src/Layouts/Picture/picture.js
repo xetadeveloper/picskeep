@@ -69,7 +69,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
     if (picture) {
       fetchUrl();
     }
-  }, [setPicUrl, pictures]);
+  }, [setPicUrl, pictures, pictureID]);
 
   useEffect(() => {
     if (isDeleted.value) {

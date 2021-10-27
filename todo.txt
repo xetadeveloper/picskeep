@@ -21,6 +21,7 @@ Client
 Super High (>2hrs)
 
 High (~2 hrs)
+* When an item in the serach list is clicked it doesn't reload the page to get the new picture
 
 Medium (~30 Mins -> 1hr)
 * Add a processOn state in components like profile components that does CRUD operations
