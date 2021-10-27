@@ -15,38 +15,38 @@ export default function httpMiddleware({ dispatch }) {
       const { payload } = action;
 
       if (payload && payload.httpMiddleware) {
-        console.log('Running http fetch');
+        // console.log('Running http fetch');
         dispatch(setIsFetching(true));
 
         const { url, method, fetchBody, headers } = payload;
-        console.log('Fetch Body: ', fetchBody);
-        console.log('Url: ', url);
+        // console.log('Fetch Body: ', fetchBody);
+        // console.log('Url: ', url);
 
         const fetchOptions = removeNull(
           new FetchOptions(method, fetchBody, headers)
         );
 
         // if (method !== 'GET' && !fetchOptions.headers) {
-        //   console.log('No headers found, adding JSON headers');
+        //   // console.log('No headers found, adding JSON headers');
         //   fetchOptions.headers = {
         //     'Content-Type': 'application/json',
         //   };
         // }
-        console.log('Fetch Options: ', fetchOptions);
+        // console.log('Fetch Options: ', fetchOptions);
         // fetchOptions.body = fetchBody;
 
         // call fetch here
         fetch(url, fetchOptions)
           .then(response => response.json())
           .then(data => {
-            console.log('Fetch Result: ', data.app);
+            // console.log('Fetch Result: ', data.app);
 
             switch (method) {
               case 'GET':
                 if (data.app && data.app.error) {
                   dispatch(getFailed(data.app));
                 } else {
-                  console.log('Dispatching successful resposne');
+                  // console.log('Dispatching successful resposne');
                   dispatch(getSuccessful(data.app));
                 }
                 break;

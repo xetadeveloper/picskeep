@@ -1,6 +1,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+export const oldConsole = { ...console };
+if (process.env.debugMode === 'debug') {
+  console.log('In Debug Mode...');
+} else {
+  console = {};
+  console.log = () => {};
+}
+
 export const errorTypes = {
   servererror: 'servererror',
   databaseerror: 'databaseerror',
@@ -23,5 +31,3 @@ export const serverErrMsg =
 export const dbOpErrorMsg = 'An error occured. Please contact support';
 
 export const saltRounds = 10;
-
-

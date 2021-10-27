@@ -4,6 +4,9 @@
   "description": "a picture app for storing pictures",
   "main": "server/server.js",
   "type": "module",
+  "engines": {
+    "node": "15.6.0"
+  },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "testWatch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
@@ -11,7 +14,7 @@
     "server": "nodemon --watch server/ server/server.js",
     "client": "npm run start --prefix ./client",
     "app": "concurrently \"npm run server\" \"npm run client\"",
-    "reactDevBuild": "cd .\\client && npm run build && ren build\\index.html app.html", 
+    "reactDevBuild": "cd .\\client && npm run build && ren build\\index.html app.html",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client && mv ./client/build/index.html ./client/build/app.html "
   },
   "jest": {
@@ -45,6 +48,7 @@
     "concurrently": "^6.2.1",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.0",
+    "heroku-client": "^3.1.0",
     "jest": "^27.2.4",
     "supertest": "^6.1.6"
   }

@@ -8,7 +8,7 @@ export default function withPictureSearch(SearchComponent) {
       // filter the pictures list for the pictureName
       const itemsFound =
         searchList && searchList.filter(item => filterFunc(item, searchTxt));
-      console.log('Found: ', itemsFound);
+      // console.log('Found: ', itemsFound);
       setFound(itemsFound);
     }, []);
 

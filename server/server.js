@@ -9,17 +9,18 @@ import { serverErrorFound } from './Utils/errorHandling.js';
 import { v4 as genUUID } from 'uuid';
 import { isLoggedInAPI, isLoggedInRedirect } from './Middleware/middleware.js';
 import cleanupServer from './Utils/cleanup.js';
-import { getS3Client, testAWSCommands } from './S3/awsModule.js';
+import { getS3Client } from './S3/awsModule.js';
 
 // Routers
 import staticRoutes from './Routes/staticRoutes.js';
 import apiRoutes from './Routes/apiRoutes.js';
+import { oldConsole } from './config.js';
 
 export const app = express();
 app.disable('x-powered-by');
 app.enable('strict routing');
 
-console.log('Strict routing enabled: ', app.enabled('strict routing'));
+console.log('Express Strict routing enabled: ', app.enabled('strict routing'));
 
 const productionMode = process.env.NODE_ENV === 'production';
 const testMode = process.env.NODE_ENV === 'test';
@@ -35,6 +36,7 @@ if (!testMode) {
   await getDBInstance();
 }
 
+// false to not create bucket if it doesn't exist in S3
 await getS3Client(false);
 
 // Mongodb session store config
@@ -92,14 +94,14 @@ app.use('/api', isLoggedInAPI, apiRoutes);
 // Serve react app here
 // if (productionMode) {
 app.get(['/app', '/app/*'], isLoggedInRedirect, (req, res) => {
-  console.log('Request for react app');
+  // console.log('Request for react app');
   res.sendFile(path.join(path.resolve(), 'client', 'build', 'app.html'));
 });
 // }
 
 // Handle all app errors
 app.use((err, req, res, next) => {
-  console.log('Catch All: ServerErrorFound: An error was thrown');
+  oldConsole.log('Catch All: ServerErrorFound: An error was thrown');
   serverErrorFound(res, err, `An error occured on the server: ${err.stack}`);
 });
 
@@ -108,7 +110,7 @@ const PORT = process.env.PORT || 5000;
 if (!testMode) {
   // Start server
   app.listen(PORT, () => {
-    console.log(`Server started at port ${PORT}`);
+    oldConsole.log(`Server started at port ${PORT}`);
   });
 }
 

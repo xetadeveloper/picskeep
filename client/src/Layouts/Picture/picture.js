@@ -41,7 +41,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   const [txtFocus, setTxtFocus] = useState(false);
   const [picUrl, setPicUrl] = useState(null);
 
-  // console.log('Picture: ', picUrl);
+  // // console.log('Picture: ', picUrl);
   const showError = useShowError();
   const { isDeleted } = useFlags();
   const resetFlags = useResetFlags();
@@ -50,7 +50,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   // For fetching the pic url from server
   useEffect(() => {
     async function fetchUrl() {
-      console.log('Fetching url from server');
+      // console.log('Fetching url from server');
       const info = await getPresignedUrl(picture.s3Key);
 
       if (info.status === 200) {
@@ -89,8 +89,8 @@ function Picture({ pictures, deletePicture, updatePicture }) {
     if (txtFocus) {
       // Run update
       setTxtFocus(false);
-      console.log('PicName: ', picName);
-      console.log('New PicName: ', picture.fileName);
+      // console.log('PicName: ', picName);
+      // console.log('New PicName: ', picture.fileName);
       if (picName !== picture.fileName) {
         updatePicture({ data: { picture: picture, newFileName: picName } });
       }
@@ -109,7 +109,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // console.log('Image downloaded...');
+      // // console.log('Image downloaded...');
     } else {
       showError({
         type: 'inputerror',
@@ -146,7 +146,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
           onChange={handleInputChange}
           onFocus={() => {
             if (!txtFocus) {
-              console.log('Gaining Focus');
+              // console.log('Gaining Focus');
               setTxtFocus(true);
             }
           }}

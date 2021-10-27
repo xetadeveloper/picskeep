@@ -13,7 +13,7 @@ export function setIsFetching(payload) {
 }
 
 export function showError(payload) {
-  // console.log('show error payload: ', payload);
+  // // console.log('show error payload: ', payload);
 
   return {
     type: SHOW_ERROR,
@@ -22,7 +22,7 @@ export function showError(payload) {
 }
 
 export function updateAppState(payload) {
-  // console.log('app payload: ', payload);
+  // // console.log('app payload: ', payload);
 
   return {
     type: UPDATE_APP_STATE,
@@ -31,7 +31,7 @@ export function updateAppState(payload) {
 }
 
 export function s3Upload(payload) {
-  console.log('S3 payload: ', payload);
+  // console.log('S3 payload: ', payload);
 
   if (payload) {
     payload.s3Middleware = true;

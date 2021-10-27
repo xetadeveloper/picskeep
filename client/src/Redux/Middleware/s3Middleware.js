@@ -11,7 +11,7 @@ export default function s3Middleware({ dispatch }) {
       const { payload } = action;
 
       if (payload && payload.s3Middleware) {
-        console.log('Running s3 fetch');
+        // console.log('Running s3 fetch');
         dispatch(setIsUploading(true));
 
         const { pictures } = payload;
@@ -23,7 +23,7 @@ export default function s3Middleware({ dispatch }) {
           })
         )
           .then(responses => {
-            console.log('Returned fetch responses: ', responses);
+            // console.log('Returned fetch responses: ', responses);
             dispatch(updateAppState({ putUrls: [] }));
             dispatch(setIsUploading(false));
             dispatch(updateFlagState({ isCreated: { value: true } }));
@@ -41,8 +41,8 @@ export default function s3Middleware({ dispatch }) {
 
 async function putObject(picture, dispatch) {
   const { file, signedUrl } = picture;
-  console.log('Picture to put: ', picture);
-  console.log('Signed Url: ', signedUrl);
+  // console.log('Picture to put: ', picture);
+  // console.log('Signed Url: ', signedUrl);
 
   const headers = {
     'Content-Type': 'image/jpg',
@@ -52,7 +52,7 @@ async function putObject(picture, dispatch) {
   const fetchOptions = removeNull(new FetchOptions('PUT', headers));
   fetchOptions.body = picture;
 
-  console.log('Fetch Options: ', fetchOptions);
+  // console.log('Fetch Options: ', fetchOptions);
   let fetchRes;
 
   // call fetch here

@@ -21,7 +21,7 @@ router.post('/delete', async (req, res) => {
   const { data } = req.body;
   const { username } = req.session;
 
-  // console.log('Delete Data: ', data)
+  console.log('Delete Data: ', data)
 
   try {
     const picture = new Picture(data.pic)
@@ -44,7 +44,7 @@ router.post('/delete', async (req, res) => {
           { $pull: { pictures: { picID: picture.picID } } }
         );
 
-        //   console.log('Deleted : ', deleteRes);
+        //   // console.log('Deleted : ', deleteRes);
 
         const { acknowledged, modifiedCount } = deleteRes;
         if (acknowledged && modifiedCount) {
@@ -82,7 +82,7 @@ router.post('/delete', async (req, res) => {
 router.post('/update', async (req, res) => {
   const { data } = req.body;
   const { picture, newFileName } = data;
-  // console.log('Updating picture: ', data);
+  console.log('Updating picture: ', data);
 
   const { username } = req.session;
   const oldPic = new Picture(picture).createS3Key(`${username}/picture`);
@@ -105,7 +105,7 @@ router.post('/update', async (req, res) => {
         'pictures.$'
       );
 
-      // console.log('Picture to update: ', propPic);
+      // // console.log('Picture to update: ', propPic);
 
       try {
         const updateRes = await users.updateOne(
@@ -113,7 +113,7 @@ router.post('/update', async (req, res) => {
           { $set: propPic }
         );
 
-        // console.log('Update response: ', updateRes);
+        // // console.log('Update response: ', updateRes);
 
         if (updateRes.acknowledged && updateRes.modifiedCount) {
           // Fetch the information
@@ -122,7 +122,7 @@ router.post('/update', async (req, res) => {
             { projection: { password: 0, _id: 0 } }
           );
 
-          // console.log('info: ', info);
+          // // console.log('info: ', info);
 
           res.status(200).json({
             app: { userInfo: info },
@@ -157,7 +157,7 @@ router.post('/create', async (req, res) => {
     const picture = new Picture(picInfo)
       .createS3Key(`${username}/picture`)
       .removeEmptyFields();
-    // console.log('Creating picture: ', picture);
+    console.log('Creating picture: ', picture);
 
     const { userID } = req.session;
     const db = await getDBInstance();

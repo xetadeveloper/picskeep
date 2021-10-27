@@ -33,13 +33,13 @@ async function connectDB(dbName = defaultDB) {
     try {
       await client.connect();
     } catch (err) {
-      console.log('Error Occured: ', err.message);
+      // console.log('Error Occured: ', err.message);
       throw err;
     }
   }
 
   const db = client.db(dbName);
-  // console.log('Db that was connected: ', db)
+  // // console.log('Db that was connected: ', db)
   if (!(await checkDBExists(db, dbName))) {
     console.log(`DB ${dbName} does not exist`);
     await configureDefaultDB(
@@ -54,6 +54,7 @@ async function connectDB(dbName = defaultDB) {
   // Add to database pool
   DBPool[dbName] = db;
   isConnected = true;
+  console.log('DB Connected now!');
 
   return db;
 }
@@ -64,7 +65,7 @@ async function checkDBExists(db, dbName) {
     .admin()
     .listDatabases()
     .then(list => {
-      // console.log('List: ', list);
+      // // console.log('List: ', list);
       list.databases.forEach(database => {
         if (database.name === dbName) {
           exists = true;
@@ -104,7 +105,7 @@ async function configureDefaultDB(
         });
     });
   } catch (err) {
-    console.log('Error Occured In Overall Creation: ', err);
+    // console.log('Error Occured In Overall Creation: ', err);
     throw err;
   }
 }
@@ -118,17 +119,16 @@ async function configureAllDB() {}
  * @returns a mongoDB database instance
  */
 export async function getDBInstance(dbName = defaultDB) {
-  // console.log('DBName to get intance: ', dbName);
+  // // console.log('DBName to get intance: ', dbName);
   if (DBPool[dbName]) {
-    // console.log('DB already connected..');
+    // // console.log('DB already connected..');
     return DBPool[dbName];
   } else {
-    // console.log('DB not connected....');
     try {
-      // console.log('DB Name: ', dbName);
+      console.log('DB not connected. Connecting....');
       return await connectDB(dbName);
     } catch (err) {
-      console.log('Error occured in gettingDBInstance: ', err);
+      // console.log('Error occured in gettingDBInstance: ', err);
       throw err;
     }
   }
@@ -142,7 +142,7 @@ export function closeClientInstance() {
   if (client) {
     try {
       client.close();
-      // console.log('Client has been closed...');
+      console.log('Client has been closed...');
       isConnected = false;
     } catch (err) {
       throw err;

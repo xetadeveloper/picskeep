@@ -42,20 +42,20 @@ function Profile({ userInfo, deleteUser, updateUser }) {
   const fileRef = useRef();
   const resetFlags = useResetFlags();
   const { isUpdated, isDeleted } = useFlags();
-  // console.log('FormData: ', formData);
+  // // console.log('FormData: ', formData);
 
-  // console.log('User Pic: ', userPic);
+  // // console.log('User Pic: ', userPic);
 
   // Sets the value of the form from userInfo
   useEffect(() => {
-    // console.log('Running Effect');
+    // // console.log('Running Effect');
     dispatch({ type: 'setinitialform', payload: userInfo });
   }, [userInfo]);
 
   // Handles successful update
   useEffect(() => {
     if (isUpdated.value) {
-      console.log('Profile Update Successful');
+      // console.log('Profile Update Successful');
 
       // When update is finished
       dispatch({ type: 'setProcessComplete' });
@@ -127,7 +127,7 @@ function Profile({ userInfo, deleteUser, updateUser }) {
     // Sort out what needs to be updated
     for (let elem in formData) {
       if (!(formData[elem] === initialState[elem])) {
-        // console.log(`${elem} is different from initial`);
+        // // console.log(`${elem} is different from initial`);
         data[elem] = formData[elem].value;
       }
     }
@@ -154,7 +154,7 @@ function Profile({ userInfo, deleteUser, updateUser }) {
       type: 'confirm',
       message: 'Delete Your Account?',
       actionHandler: () => {
-        console.log('Deleting Account...');
+        // console.log('Deleting Account...');
         // call redux delete account
         deleteUser();
       },
@@ -190,13 +190,13 @@ function Profile({ userInfo, deleteUser, updateUser }) {
   // Computes the src image for the img tag for initial render
   async function setInitialImgSrc() {
     if (selectedPic) {
-      console.log('Pic was selected');
+      // console.log('Pic was selected');
       dispatch({
         type: 'setUserPic',
         payload: URL.createObjectURL(selectedPic),
       });
     } else if (profilePic && profilePic.fileName) {
-      console.log('Gettinf profile pic form s3');
+      // console.log('Gettinf profile pic form s3');
       // get picture from s3 and return
       const info = await getPresignedUrl(profilePic.s3Key);
 
@@ -223,7 +223,7 @@ function Profile({ userInfo, deleteUser, updateUser }) {
         });
       }
     } else {
-      console.log('Returning default picture');
+      // console.log('Returning default picture');
       dispatch({
         type: 'setUserPic',
         payload: defaultUserPic,

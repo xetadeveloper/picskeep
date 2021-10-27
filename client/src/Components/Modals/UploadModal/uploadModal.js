@@ -25,8 +25,8 @@ function UploadModal(props) {
   const [fileList, setFileList] = useState([]);
   const [innerModalState, setInnerModalState] = useState({ show: false });
   const fileRef = useRef();
-  // console.log('FileList State: ', fileList);
-  // console.log('FileList length: ', fileList.length);
+  // // console.log('FileList State: ', fileList);
+  // // console.log('FileList length: ', fileList.length);
   const showError = useShowError();
   const resetFlags = useResetFlags();
   const { isCreated, isUploading } = useFlags();
@@ -40,9 +40,9 @@ function UploadModal(props) {
 
   useEffect(() => {
     if (putUrls.length) {
-      console.log('Uploading Pictures...: ', putUrls);
+      // console.log('Uploading Pictures...: ', putUrls);
       if (putUrls.length === fileList.length) {
-        console.log('Array lengths match');
+        // console.log('Array lengths match');
 
         const uploadPics = fileList.map((file, index) => {
           return { file, signedUrl: putUrls[index].signedUrl };
@@ -57,7 +57,7 @@ function UploadModal(props) {
 
   useEffect(() => {
     if (isCreated.value) {
-      console.log('Pictures were successfuly uploaded');
+      // console.log('Pictures were successfuly uploaded');
 
       setFileList([]);
       setInnerModalState({
@@ -70,7 +70,7 @@ function UploadModal(props) {
 
   function uploadPictures() {
     if (fileList.length) {
-      console.log('Sending file list to server...');
+      // console.log('Sending file list to server...');
       getPutUrls({ data: { fileNames: fileList.map(file => file.name) } });
     }
   }
@@ -123,13 +123,13 @@ function UploadModal(props) {
 
   // Handles choosing file and updating state
   function handleFileChoose(evt) {
-    console.log('Event: ', evt);
+    // console.log('Event: ', evt);
     const files = Array.from(evt.target.files);
-    // console.log('Files Selected: ', files);
+    // // console.log('Files Selected: ', files);
 
     fileList.forEach(oldFile => {
       files.forEach((newFile, index) => {
-        // console.log('New File: ', newFile);
+        // // console.log('New File: ', newFile);
 
         // Check of file is image first
         if (!newFile.type.startsWith('image')) {

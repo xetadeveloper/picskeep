@@ -17,7 +17,7 @@ const router = express.Router();
 
 // ============ Normal routes =============
 router.get('/test', (req, res) => {
-  // console.log('Test route called');
+  console.log('Test route called');
   res.status(200).send('Working');
 });
 
@@ -37,10 +37,10 @@ router.get('/getUserInfo', async (req, res) => {
         { projection: { password: 0 } }
       );
 
-      console.log('Found User before adding url: ', foundUser);
+      // console.log('Found User before adding url: ', foundUser);
 
       if (foundUser) {
-        console.log('Found User after adding url: ', foundUser);
+        // console.log('Found User after adding url: ', foundUser);
         res.status(200).json({
           app: { userInfo: foundUser },
         });
@@ -63,10 +63,10 @@ router.get('/getUserInfo', async (req, res) => {
 // Gets one aws signed url
 router.post('/getSignedUrl', hasData, async (req, res) => {
   const { s3Key } = req.body.data;
-  // console.log('Sending aws get url...');
+  console.log('Sending aws get url...');
 
   const signedUrl = await getPresignedUrl(s3Key);
-  // console.log('Get Signed Url: ', signedUrl);
+  // // console.log('Get Signed Url: ', signedUrl);
 
   res.status(200).json({ signedUrl });
 });
@@ -84,7 +84,7 @@ router.post('/getMultipleSignedUrls', hasData, async (req, res) => {
     })
   );
 
-  console.log('Signed Urls: ', multipleUrls);
+  // console.log('Signed Urls: ', multipleUrls);
 
   res.status(200).json({ app: { getUrls: multipleUrls } });
 });
@@ -98,7 +98,7 @@ router.post('/putSignedUrl', hasData, async (req, res) => {
   const key = `${username}/profile/${fileName}`;
 
   const signedUrl = await putPresignedUrl(key);
-  // console.log('Put Signed Url: ', signedUrl);
+  // // console.log('Put Signed Url: ', signedUrl);
 
   res.status(200).json({ signedUrl });
 });
@@ -117,7 +117,7 @@ router.post('/putMultipleSignedUrls', hasData, async (req, res) => {
     })
   );
 
-  console.log('Signed Urls: ', multipleUrls);
+  // console.log('Signed Urls: ', multipleUrls);
 
   res.status(200).json({ app: { putUrls: multipleUrls } });
 });

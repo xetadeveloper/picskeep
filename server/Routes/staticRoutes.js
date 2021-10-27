@@ -17,7 +17,7 @@ const router = express.Router({ mergeParams: true, strict: true });
 
 // Home page
 router.get('/', (req, res) => {
-  console.log('Sending hompage');
+  console.log('Sending homepage');
   res
     .status(200)
     .sendFile(
@@ -69,7 +69,7 @@ router.get('/about', (req, res) => {
 // login
 router.get('/login', async (req, res) => {
   // Check the session store if there's any session available
-  console.log('Serving login html from staticRoutes');
+  // console.log('Serving login html from staticRoutes');
   if (req.session.userID) {
     res.redirect('/app/home');
   } else {
@@ -140,7 +140,7 @@ router.post('/login', hasData, async (req, res) => {
             },
           });
         } else {
-          console.log('Password not correct');
+          // console.log('Password not correct');
           badInputError(res, [
             {
               field: password.fieldId,
@@ -149,7 +149,7 @@ router.post('/login', hasData, async (req, res) => {
           ]);
         }
       } else {
-        console.log('user not found');
+        // console.log('user not found');
         badInputError(res, [
           {
             field: username.fieldId,
@@ -316,7 +316,7 @@ router.get('/restoreSession', async (req, res) => {
       },
     });
   } else {
-    console.log('Redirecting back to login...');
+    // console.log('Redirecting back to login...');
     res.status(400).json({
       app: { isLoggedIn: false, redirectToLogin: true },
     });

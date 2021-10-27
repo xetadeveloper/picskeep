@@ -65,13 +65,15 @@ function handleLogin(evt) {
       })
       .then(data => {
         if (data) {
-          console.log('Data received: ', data);
+          // console.log('Data received: ', data);
           resetErrorFields();
           handleDataReceived(data);
-        } else {
-        }
+        } 
       })
-      .catch(err => console.log('Error received: ', err));
+      .catch(err => {
+        alert('An error occured: ', err);
+        // console.log('Error received: ', err);
+      });
   }
 }
 
@@ -91,13 +93,13 @@ function getSubmitData(loginData) {
     loginData.data.email = { value: email.value, fieldId: email.id };
   }
 
-  console.log('Login data to send: ', loginData);
+  // console.log('Login data to send: ', loginData);
   return loginData;
 }
 
 function handleDataReceived(data) {
   const { app } = data;
-  console.log('App Result: ', app);
+  // console.log('App Result: ', app);
   if (app.error) {
     const errorFields = app.error.errorFields || {};
 
@@ -109,7 +111,7 @@ function handleDataReceived(data) {
     });
   } else {
     // redirect to app page
-    console.log('Going to home page');
+    // console.log('Going to home page');
     window.location.href = homeUrl;
   }
 }

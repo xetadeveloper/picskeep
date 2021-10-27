@@ -14,7 +14,7 @@ import { useLocation, useParams } from 'react-router';
 import { convertCamelCase } from '../../Utils/utils';
 
 function Folder({ folders }) {
-  console.log('Folders: ', dummyFolders);
+  // console.log('Folders: ', dummyFolders);
 
   const folderID = new URLSearchParams(useLocation().search).get('folderID');
 
@@ -24,7 +24,7 @@ function Folder({ folders }) {
 
   const { pictures } = folder || {};
 
-  console.log('FOlder found: ', folder);
+  // console.log('FOlder found: ', folder);
   return (
     <section className={`${style.container}`}>
       <section className={`${style.folderHeader}`}>

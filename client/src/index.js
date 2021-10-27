@@ -8,12 +8,13 @@ import store from './Redux/Store/store';
 import './index.css';
 
 // Components
-import App from './mainApp';
+import MainApp from './mainApp';
+
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <MainApp />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

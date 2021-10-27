@@ -5,14 +5,14 @@ const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && entry.target.id === 'about') {
-        // console.log('About page is intersecting');
+        // // console.log('About page is intersecting');
         const overlay = document.querySelector('#about .overlay');
         overlay.classList.add('fadeAnimation');
       } else {
         if (!entry.isIntersecting) {
           const overlay = document.querySelector('#about .overlay');
           overlay.classList.remove('fadeAnimation');
-          //   console.log('About page is not intersecting');
+          //   // console.log('About page is not intersecting');
         }
       }
     });
@@ -32,13 +32,13 @@ function handleTour() {
   let current = 0;
 
   function changePage() {
-    console.log('Current: ', current);
+    // console.log('Current: ', current);
     if (current >= pages.length - 1) {
-      console.log('Clearing interval');
+      // console.log('Clearing interval');
       clearInterval(interval);
     } else {
       const nextBtn = document.querySelector(`#${pages[current]} .next-btn`);
-      console.log('Next btn: ', nextBtn);
+      // console.log('Next btn: ', nextBtn);
       nextBtn.click();
       current++;
     }
@@ -60,7 +60,7 @@ function handleContact(evt) {
     },
   };
 
-  console.log('Form to send: ', form);
+  // console.log('Form to send: ', form);
 
   fetch('/contact', {
     method: 'POST',
@@ -72,7 +72,7 @@ function handleContact(evt) {
     cache: 'default',
   })
     .then(res => {
-    //   console.log('Response statuc: ', res.status);
+    //   // console.log('Response statuc: ', res.status);
       if (res.status === 200) {
         resetAllFields();
         alert('Email has been sent successfully!');

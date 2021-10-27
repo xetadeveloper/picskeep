@@ -14,7 +14,7 @@ import {
 export function isLoggedInAPI(req, res, next) {
   // console.log('Req Session UserID: ', req.session.userID);
   if (req.session.userID) {
-    console.log('user is logged in');
+    // console.log('user is logged in');
     next();
   } else {
     // console.log('user is not logged in');

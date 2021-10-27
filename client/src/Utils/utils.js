@@ -122,7 +122,7 @@ export async function putImage(url, image) {
       body: image,
     });
 
-    console.log('Put Response: ', response);
+    // console.log('Put Response: ', response);
     if (response.status === 200) {
       return { status: response.status };
     } else {

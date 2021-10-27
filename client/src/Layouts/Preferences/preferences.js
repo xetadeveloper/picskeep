@@ -23,7 +23,7 @@ export default function Preferences() {
           show: true,
           type: 'password',
           actionHandler: () => {
-            console.log('Changing password...');
+            // console.log('Changing password...');
             // call redux update password
           },
         });
