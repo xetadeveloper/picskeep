@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 import style from '../modalStyle.module.css';
 
 export default function InputModal(props) {
-  let iconLib = props.iconLib;
   const { modalState, closeModal } = props;
   const { message, actionHandler, inputData, error, submitBtnText } =
     modalState;
@@ -46,9 +45,11 @@ export default function InputModal(props) {
                 ? style.redBorder
                 : ''
             }`}
+            id={inputName}
             name={inputName}
             value={formData[inputName]}
             onChange={handleInputChange}
+            required
           />
         </div>
       );
@@ -56,7 +57,11 @@ export default function InputModal(props) {
   }
 
   return (
-    <div
+    <form
+      onSubmit={evt => {
+        evt.preventDefault();
+        actionHandler(evt, formData);
+      }}
       className={`
           flex
           flex-col
@@ -64,18 +69,19 @@ export default function InputModal(props) {
           ${style['modal-body']}
           ${style['modal-skin']}
       `}>
-      <button className={`${style['modal-close-btn']}`} onClick={closeModal}>
+      <button
+        type='button'
+        className={`${style['modal-close-btn']}`}
+        onClick={closeModal}>
         <FiX />
       </button>
       <h3>{message}</h3>
       {renderInputs()}
       <button
-        className={`${style['modal-btn']} ${style['modal-btn-lg']}`}
-        onClick={evt => {
-          actionHandler(evt, formData);
-        }}>
+        type='submit'
+        className={`${style['modal-btn']} ${style['modal-btn-lg']} ${style['modal-btn-wide']}`}>
         {submitBtnText || 'Submit'}
       </button>
-    </div>
+    </form>
   );
 }

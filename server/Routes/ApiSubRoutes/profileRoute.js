@@ -155,6 +155,7 @@ router.post('/update', hasData, async (req, res) => {
 
 router.post('/passwordchange', hasData, async (req, res) => {
   const { data } = req.body;
+  console.log('Changing password: ', data);
   const { oldPassword, newPassword } = data;
   // const userID = ObjectId(req.session.userID);
   const { userID } = req.session;
@@ -201,7 +202,7 @@ router.post('/passwordchange', hasData, async (req, res) => {
           } else {
             badInputError(res, [
               {
-                field: 'oldpassword',
+                field: 'oldPassword',
                 message: 'Password supplied is incorrect',
               },
             ]);

@@ -45,7 +45,7 @@ export function isLoggedInRedirect(req, res, next) {
  */
 export function hasData(req, res, next) {
   const { data } = req.body;
-  // console.log('Reques body: ', req.body);
+  console.log('Reques body: ', req.body);
   // console.log('Data: ', data);
 
   if (!data || !Object.entries(data).length) {

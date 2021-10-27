@@ -4,6 +4,7 @@ import { setIsUploading, updateFlagState } from '../Actions/flagsActions';
 import { showError, updateAppState } from '../Actions/appActions';
 import FetchOptions from '../../Utils/FetchOptions';
 import { errorTypes } from '../../config';
+import { createPictures } from '../Actions/httpActions';
 
 export default function s3Middleware({ dispatch }) {
   return function (next) {
@@ -24,6 +25,39 @@ export default function s3Middleware({ dispatch }) {
         )
           .then(responses => {
             // console.log('Returned fetch responses: ', responses);
+
+            const successfulUploads = responses
+              .filter(response => response.status === 'fulfilled')
+              .map(response => response.value.picture.file.name);
+
+            const failedUploads = responses
+              .filter(response => response.status !== 'fulfilled')
+              .map(response => response.value.picture.file.name);
+
+            // console.log('Successful uploads: ', successfulUploads);
+            // console.log('Failed uploads: ', failedUploads);
+
+            // dispatch action to update DB
+            if (successfulUploads.length) {
+              dispatch(
+                createPictures({
+                  method: 'POST',
+                  fetchBody: { data: { fileNames: successfulUploads } },
+                  headers: { 'Content-Type': 'application/json' },
+                })
+              );
+            }
+
+            if (failedUploads.length) {
+              // Dispatch error for those that failed
+              dispatch(
+                showError({
+                  type: errorTypes.uploaderror,
+                  message: `Some uploads failed: \n${failedUploads}`,
+                })
+              );
+            }
+
             dispatch(updateAppState({ putUrls: [] }));
             dispatch(setIsUploading(false));
             dispatch(updateFlagState({ isCreated: { value: true } }));
@@ -41,7 +75,7 @@ export default function s3Middleware({ dispatch }) {
 
 async function putObject(picture, dispatch) {
   const { file, signedUrl } = picture;
-  // console.log('Picture to put: ', picture);
+  // console.log('Picture to put: ', file);
   // console.log('Signed Url: ', signedUrl);
 
   const headers = {
@@ -50,7 +84,7 @@ async function putObject(picture, dispatch) {
   };
 
   const fetchOptions = removeNull(new FetchOptions('PUT', headers));
-  fetchOptions.body = picture;
+  fetchOptions.body = file;
 
   // console.log('Fetch Options: ', fetchOptions);
   let fetchRes;

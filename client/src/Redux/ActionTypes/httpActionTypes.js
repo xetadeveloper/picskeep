@@ -16,4 +16,5 @@ export const UPDATE_PIC = 'UPDATE_PIC';
 
 // Profile
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
+export const UPDATE_PASSWORD = 'UPDATE_PASSWORD';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';

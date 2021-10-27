@@ -12,6 +12,7 @@ Medium
 * Create the function documentation for the mongodb.js functions
 
 Small
+* Turn off debug mode
 
 
 

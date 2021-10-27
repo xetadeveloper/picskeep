@@ -1,4 +1,5 @@
 import { removeNull } from '../../Utils/utility.js';
+import { v4 } from 'uuid';
 
 export default class Picture {
   constructor(picture) {
@@ -18,7 +19,11 @@ export default class Picture {
 
   createS3Key(path) {
     this.s3Key = `${path}/${this.fileName}`;
+    return this;
+  }
 
+  createID() {
+    this.picID = v4();
     return this;
   }
 
@@ -27,6 +32,7 @@ export default class Picture {
       picID: this.picID,
       fileName: this.fileName,
       s3Key: this.s3Key,
+      type: this.type,
     };
 
     for (let prop in mongoTypes) {

@@ -26,6 +26,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   const pictureID = new URLSearchParams(useLocation().search).get('pictureID');
   const [modalState, setModalState] = useState({ show: false });
 
+  // console.log('Pictures in picture: ', pictures);
   let picture;
 
   if (appMode === 'dummy') {
@@ -35,13 +36,14 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   } else {
     picture = pictures && pictures.find(picture => picture.picID === pictureID);
   }
+  // console.log('Picture: ', picUrl);
 
   // States
   const [picName, setPicName] = useState(picture ? picture.fileName : '');
   const [txtFocus, setTxtFocus] = useState(false);
   const [picUrl, setPicUrl] = useState(null);
 
-  // // console.log('Picture: ', picUrl);
+
   const showError = useShowError();
   const { isDeleted } = useFlags();
   const resetFlags = useResetFlags();
@@ -51,6 +53,7 @@ function Picture({ pictures, deletePicture, updatePicture }) {
   useEffect(() => {
     async function fetchUrl() {
       // console.log('Fetching url from server');
+      setPicName(picture.fileName);
       const info = await getPresignedUrl(picture.s3Key);
 
       if (info.status === 200) {
@@ -63,8 +66,10 @@ function Picture({ pictures, deletePicture, updatePicture }) {
       }
     }
 
-    fetchUrl();
-  }, [setPicUrl]);
+    if (picture) {
+      fetchUrl();
+    }
+  }, [setPicUrl, pictures]);
 
   useEffect(() => {
     if (isDeleted.value) {
@@ -189,9 +194,9 @@ function Picture({ pictures, deletePicture, updatePicture }) {
 }
 
 function mapStateToProps(state) {
-  const { pictures } = state.app;
+  const { userInfo } = state.app;
 
-  return { pictures };
+  return { pictures: userInfo.pictures };
 }
 
 function mapDispatchToProps(dispatch) {

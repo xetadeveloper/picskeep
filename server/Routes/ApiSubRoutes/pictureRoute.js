@@ -10,7 +10,11 @@ import {
 import { dbOpErrorMsg, errorTypes, serverErrMsg } from '../../config.js';
 import Picture from '../../Database/Models/pictureModel.js';
 import { appendPropertyName } from '../../Utils/utility.js';
-import { deleteObject, renameObject } from '../../S3/awsModule.js';
+import {
+  deleteMultipleObjects,
+  deleteObject,
+  renameObject,
+} from '../../S3/awsModule.js';
 const { updateerror } = errorTypes;
 
 const router = express.Router();
@@ -21,7 +25,7 @@ router.post('/delete', async (req, res) => {
   const { data } = req.body;
   const { username } = req.session;
 
-  console.log('Delete Data: ', data)
+  console.log('Delete Data: ', data);
 
   try {
     const picture = new Picture(data.pic)
@@ -147,7 +151,7 @@ router.post('/update', async (req, res) => {
   }
 });
 
-// Creating picture
+// Creating one picture
 router.post('/create', async (req, res) => {
   const { data } = req.body;
   const { picInfo } = data;
@@ -183,6 +187,77 @@ router.post('/create', async (req, res) => {
       } else {
         // Delete picture from s3
         const delRes = await deleteObject(picture.s3Key);
+
+        if (delRes.statusCode === 200) {
+          executionError(
+            res,
+            500,
+            updateerror,
+            'Could not add picture to DB. Contact Support'
+          );
+        } else {
+          executionError(
+            res,
+            500,
+            updateerror,
+            'Could not add picture to DB and failed to delete picture from storage. Contact Support'
+          );
+        }
+      }
+    } catch (err) {
+      dbOperationError(res, err, dbOpErrorMsg);
+    }
+  } catch (err) {
+    serverErrorFound(res, err, serverErrMsg);
+  }
+});
+
+// Creating many pictures
+router.post('/createMany', async (req, res) => {
+  const { data } = req.body;
+  const { fileNames } = data;
+  const { username } = req.session;
+
+  try {
+    const pictures = fileNames.map(file => {
+      return new Picture({ fileName: file, type: 'picture' })
+        .createID()
+        .createS3Key(`${username}/picture`)
+        .removeEmptyFields();
+    });
+
+    console.log('Creating pictures: ', pictures);
+
+    const { userID } = req.session;
+    const db = await getDBInstance();
+    const users = db.collection('users');
+
+    try {
+      const updateRes = await users.updateOne(
+        { _id: ObjectId(userID) },
+        {
+          $push: {
+            pictures: { $each: pictures.map(pic => pic.convertToMongo()) },
+          },
+        }
+      );
+
+      if (updateRes.acknowledged && updateRes.modifiedCount) {
+        // Fetch the information
+        const info = await users.findOne(
+          { _id: ObjectId(userID) },
+          { projection: { password: 0, _id: 0 } }
+        );
+
+        res.status(200).json({
+          app: { userInfo: info },
+          flags: { isCreated: { value: true } },
+        });
+      } else {
+        // Delete pictures from s3
+        const delRes = await deleteMultipleObjects(
+          pictures.map(pic => pic.s3Key)
+        );
 
         if (delRes.statusCode === 200) {
           executionError(

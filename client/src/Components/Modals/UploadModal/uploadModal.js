@@ -25,7 +25,7 @@ function UploadModal(props) {
   const [fileList, setFileList] = useState([]);
   const [innerModalState, setInnerModalState] = useState({ show: false });
   const fileRef = useRef();
-  // // console.log('FileList State: ', fileList);
+  // console.log('FileList State: ', fileList);
   // // console.log('FileList length: ', fileList.length);
   const showError = useShowError();
   const resetFlags = useResetFlags();
@@ -36,7 +36,7 @@ function UploadModal(props) {
     return () => {
       resetFlags();
     };
-  });
+  }, []);
 
   useEffect(() => {
     if (putUrls.length) {

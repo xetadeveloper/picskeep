@@ -10,6 +10,7 @@ import {
   POST_SUCCESSFUL,
   PUT_URLS,
   RESTORE_SESSION,
+  UPDATE_PASSWORD,
   UPDATE_PIC,
   UPDATE_PROFILE,
 } from '../ActionTypes/httpActionTypes';
@@ -79,9 +80,10 @@ export function deletePicture(payload) {
   };
 }
 
-export function createPicture(payload) {
+export function createPictures(payload) {
+  // console.log('sending multiple pictures to DB');
   if (payload) {
-    payload.url = '/api/picture/create';
+    payload.url = '/api/picture/createMany';
     payload.httpMiddleware = true;
   }
 
@@ -136,6 +138,18 @@ export function updateProfile(payload) {
 
   return {
     type: UPDATE_PROFILE,
+    payload,
+  };
+}
+
+export function updatePassword(payload) {
+  if (payload) {
+    payload.url = '/api/profile/passwordchange';
+    payload.httpMiddleware = true;
+  }
+
+  return {
+    type: UPDATE_PASSWORD,
     payload,
   };
 }

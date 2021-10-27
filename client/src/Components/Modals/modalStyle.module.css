@@ -46,6 +46,11 @@
   height: 35px;
 }
 
+.modal-btn-wide {
+  height: 40px;
+  font-size: 0.9em;
+}
+
 .modal-close-btn {
   position: absolute;
   top: 15px;
@@ -77,12 +82,13 @@
 
 /* Input Modal */
 .modal-input {
-  height: 35px;
+  height: 40px;
   border-radius: 5px;
   border: 1px solid #c7c6c6;
   padding: 0px 10px;
   color: rgb(71, 71, 71);
   outline-color: #6e6e6e;
+  font-family: inherit;
 }
 
 .modalInputHolder {
@@ -102,7 +108,7 @@
 
 /* Atomic Classes */
 .redBorder {
-  border: 2px solid rgb(233, 76, 76);
+  border: 2px solid #5c0404;
 }
 
 @keyframes spin {

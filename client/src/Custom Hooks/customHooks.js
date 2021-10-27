@@ -8,8 +8,10 @@ import { resetFlagState } from '../Redux/Actions/flagsActions';
  * @returns list of folders and pictures
  */
 export function useSearchList() {
-  const pictures = useSelector(state => state.app.pictures);
-  const folders = useSelector(state => state.app.folders);
+  const pictures = useSelector(state => state.app.userInfo.pictures);
+  const folders = useSelector(state => state.app.userInfo.folders);
+
+  // console.log('Pictures: ', pictures);
 
   const list = [];
   const dummyList = dummySearchList;
