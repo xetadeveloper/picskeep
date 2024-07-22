@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import mongoTypes from 'mongodb';
 const { Double } = mongoTypes;
 import { removeNull } from '../../Utils/utility.js';

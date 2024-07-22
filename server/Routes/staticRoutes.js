@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { getDBInstance } from '../Database/mongoDB.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import {
   badInputError,
   dbOperationError,

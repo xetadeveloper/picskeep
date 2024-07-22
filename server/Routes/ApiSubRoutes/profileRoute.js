@@ -14,7 +14,7 @@ import {
   executionError,
   serverErrorFound,
 } from '../../Utils/errorHandling.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { hasData } from '../../Middleware/middleware.js';
 import User from '../../Database/Models/userModel.js';
 import { deleteMultipleObjects } from '../../S3/awsModule.js';
