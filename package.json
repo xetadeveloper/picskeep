@@ -13,7 +13,7 @@
         "start": "node server/server.js",
         "server-start": "nodemon --watch server/ server/server.js",
         "client-start": "cd client && yarn start",
-        "client-build": " cd client && yarn run build && mv ./client/build/index.html ./client/build/app.html",
+        "client-build": " cd client && yarn run build && mv ./build/index.html ./build/app.html",
         "dev": "concurrently \"yarn run server\" \"yarn run client\"",
         "client-dev-build": "cd .\\client && yarn run build && ren build\\index.html app.html"
     },
