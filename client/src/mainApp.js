@@ -19,7 +19,6 @@ import { getUserInfo, restoreSession } from './Redux/Actions/httpActions';
 import { FiPlus } from 'react-icons/fi';
 import Home from './Layouts/Home/home';
 import Profile from './Layouts/Profile/profile';
-import Dashboard from './Layouts/Dashboard/dashboard';
 import Picture from './Layouts/Picture/picture';
 import NotFound from './Layouts/NotFound/notFound';
 import Folder from './Layouts/Folder/folder';
@@ -66,7 +65,6 @@ function MainApp(props) {
 
   const navLinks = [
     { path: '/', text: 'Home' },
-    { path: '/dashboard', text: 'DashBoard' },
     { path: '/preferences', text: 'Preferences' },
     { path: '/logout', text: 'Logout' },
   ];
@@ -91,7 +89,6 @@ function MainApp(props) {
             <Route path='/settings' component={Settings} />
             <Route path='/folders' component={Folder} />
             <Route path='/pictures' component={Picture} />
-            <Route path='/dashboard' component={Dashboard} />
             <Route
               path='/logout'
               render={() => {

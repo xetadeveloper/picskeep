@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { legacy_createStore, applyMiddleware, combineReducers } from 'redux';
 import httpMiddleware from '../Middleware/httpMiddleware';
 import s3Middleware from '../Middleware/s3Middleware';
 import appReducer from '../Reducers/appReducer';
@@ -9,7 +9,7 @@ const rootReducer = combineReducers({
   flags: flagReducer,
 });
 
-const store = createStore(
+const store = legacy_createStore(
   rootReducer,
   applyMiddleware(httpMiddleware, s3Middleware)
 );
