@@ -11,11 +11,11 @@
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
         "testWatch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
         "start": "node server/server.js",
-        "server": "nodemon --watch server/ server/server.js",
-        "client": "cd client && yarn start",
-        "client-build": " cd client && yarn run build && cd ..",
-        "app": "concurrently \"yarn run server\" \"yarn run client\"",
-        "reactDevBuild": "cd .\\client && yarn run build && ren build\\index.html app.html"
+        "server-start": "nodemon --watch server/ server/server.js",
+        "client-start": "cd client && yarn start",
+        "client-build": " cd client && yarn run build && mv ./client/build/index.html ./client/build/app.html",
+        "dev": "concurrently \"yarn run server\" \"yarn run client\"",
+        "client-dev-build": "cd .\\client && yarn run build && ren build\\index.html app.html"
     },
     "jest": {
         "collectCoverage": true,
