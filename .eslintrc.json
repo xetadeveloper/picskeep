@@ -18,7 +18,8 @@
         "linebreak-style": ["error", "windows"],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
-        "unused-vars": "warn",
-        "react/exhaustive-deps": "warn"
+        "no-unused-vars": ["warn"],
+        "react-hooks/exhaustive-deps": ["warn"],
+        "jsx-a11y/alt-text": ["warn"]
     }
 }
