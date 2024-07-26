@@ -13,9 +13,9 @@
         "start": "node server/server.js",
         "server-start": "nodemon --watch server/ server/server.js",
         "client-start": "cd client && yarn start",
-        "client-build": " cd client && yarn install && yarn run build && mv ./build/index.html ./build/app.html",
+        "client-build": " cd client && yarn install && yarn run build",
         "dev": "concurrently \"yarn run server\" \"yarn run client\"",
-        "client-dev-build": "cd .\\client && yarn run build && ren build\\index.html app.html"
+        "client-dev-build": "cd .\\client && yarn run build"
     },
     "jest": {
         "collectCoverage": true,
@@ -42,6 +42,9 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/connect-mongodb-session": "^2.4.7",
+        "@types/express": "^4.17.21",
         "@types/jest": "^27.0.2",
         "@types/supertest": "^2.0.11",
         "axios": "^0.21.4",

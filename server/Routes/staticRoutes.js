@@ -10,14 +10,14 @@ import {
 } from '../Utils/errorHandling.js';
 import { hasData } from '../Middleware/middleware.js';
 import User from '../Database/Models/userModel.js';
-import { dbOpErrorMsg, errorTypes, serverErrMsg } from '../config.js';
+import { dbOpErrorMsg, errorTypes, oldConsole, serverErrMsg } from '../config.js';
 import { sendEmail } from '../Utils/MailSender/mailSend.js';
 
 const router = express.Router({ mergeParams: true, strict: true });
 
 // Home page
 router.get('/', (req, res) => {
-  console.log('Sending homepage');
+  oldConsole.log('Sending homepage');
   res
     .status(200)
     .sendFile(
