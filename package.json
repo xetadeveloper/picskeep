@@ -49,9 +49,6 @@
         "@types/supertest": "^2.0.11",
         "axios": "^0.21.4",
         "concurrently": "^6.2.1",
-        "eslint": "^7.32.0",
-        "eslint-plugin-react": "^7.26.0",
-        "heroku-client": "^3.1.0",
         "jest": "^27.2.4",
         "supertest": "^6.1.6"
     }
