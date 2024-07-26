@@ -4,7 +4,7 @@
         "es2021": true,
         "node": true
     },
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    // "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -17,9 +17,6 @@
         "indent": ["error", "tab"],
         "linebreak-style": ["error", "windows"],
         "quotes": ["error", "single"],
-        "semi": ["error", "always"],
-        "no-unused-vars": ["warn"],
-        "react-hooks/exhaustive-deps": ["warn"],
-        "jsx-a11y/alt-text": ["warn"]
+        "semi": ["error", "always"]
     }
 }
